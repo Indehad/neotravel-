@@ -1,214 +1,214 @@
-# NeoTravel — Task Board
+# NeoTravel — Tableau des Tâches
 
-> **Team:** Gendell · Inde · Yahia | **Repo:** github.com/boolshyt/neotravel
-
----
-
-## Deadlines
-
-| Date | Deliverable | Who |
-|---|---|---|
-| **June 24 at 23:59** | L1 — Dossier de cadrage | All 3 |
-| **June 29 at 23:59** | L2 — Prototype + L3 — Handoff docs | Gendell + Inde |
-| **June 30 at 23:59** | Presentation slides | Yahia + Inde |
-| **July 1** | Live presentation + demo | All 3 |
+> **Équipe :** Gendell · Inde · Yahia | **Dépôt :** github.com/boolshyt/neotravel
 
 ---
 
-## PHASE 0 — L1 Dossier de Cadrage _(due June 24 at 23:59)_
+## Échéances
 
-> No tools or setup needed — this is a writing task. The draft is already in `L1_DOSSIER_DE_CADRAGE.md`.
-> Each person writes their section and pushes. Gendell submits the final PDF.
-
-| #   | Who         | Task                     | Detail                                                                                                                                                |
-| --- | ----------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Gendell** | Read the full draft      | Open `L1_DOSSIER_DE_CADRAGE.md` and read through all 9 sections                                                                                       |
-| 2   | **Gendell** | Push to GitHub           | `git add . && git commit -m "docs: L1 draft" && git push` so the team can access it                                                                   |
-| 3   | **Inde**    | Pull the repo            | `git pull` to get the latest version                                                                                                                  |
-| 4   | **Inde**    | Write Section 2.1        | Add 2–3 paragraphs in French in Section 2.1: what NeoTravel does today, why the manual process is a problem, what automation changes for the business |
-| 5   | **Inde**    | Push your changes        | `git add L1_DOSSIER_DE_CADRAGE.md && git commit -m "docs: add business analysis" && git push`                                                         |
-| 6   | **Yahia**   | Pull the repo            | `git pull` to get the latest version                                                                                                                  |
-| 7   | **Yahia**   | Write competitor section | In Section 9, add 2–3 competitor examples (name + one line each — e.g. GetTransfer, Mozio, Autocars.com)                                              |
-| 8   | **Yahia**   | Push your changes        | `git add L1_DOSSIER_DE_CADRAGE.md && git commit -m "docs: add competitor research" && git push`                                                       |
-| 9   | **Gendell** | Final review             | Pull latest, read the full document with all additions, adjust anything off                                                                           |
-| 10  | **Gendell** | Submit                   | Export to PDF and submit on the Epitech platform before **June 24 at 23:59**                                                                          |
+| Date | Livrable | Qui |
+|---|---|---|
+| **24 juin à 23h59** | L1 — Dossier de cadrage | Tous les 3 |
+| **29 juin à 23h59** | L2 — Prototype + L3 — Documentation de passation | Gendell + Inde |
+| **30 juin à 23h59** | Diapositives de présentation | Yahia + Inde |
+| **1er juillet** | Présentation live + démo | Tous les 3 |
 
 ---
 
-## PHASE 1 — Dev Setup _(June 24–25, after L1 is submitted)_
+## PHASE 0 — Dossier de Cadrage L1 _(rendu le 24 juin à 23h59)_
 
-> One-time setup so everyone can run the project locally. Everything is free — no credit card needed.
+> Aucun outil ni configuration nécessaire — c'est une tâche de rédaction. Le brouillon est déjà dans `L1_DOSSIER_DE_CADRAGE.md`.
+> Chaque personne rédige sa section et fait un push. Gendell soumet le PDF final.
 
-| Account / Tool | Who | How |
-|---|---|---|
-| **Gemini API key** | Gendell | Go to [aistudio.google.com](https://aistudio.google.com) → sign in → Get API key → save it somewhere safe |
-| **Node.js** | Gendell + Inde | Download LTS from [nodejs.org](https://nodejs.org) → install → verify: `node --version` |
-| **n8n** | Gendell | In terminal: `npm install n8n -g` then `n8n start` → open [localhost:5678](http://localhost:5678) |
-| **Airtable account** | Gendell | Sign up at [airtable.com](https://airtable.com) → create a base called **"NeoTravel CRM"** |
-| **Airtable API key** | Gendell | Profile icon → Account → API → generate personal access token → save it |
-| **GitHub collaborators** | Gendell | Settings → Collaborators → add Inde and Yahia's GitHub usernames |
-| **Vercel** | Inde | Sign up at [vercel.com](https://vercel.com) using your GitHub account |
-| **Resend** | Inde | Sign up at [resend.com](https://resend.com) → API Keys → create a key → save it |
-| **Clone repo** | Inde + Yahia | `git clone https://github.com/boolshyt/neotravel.git` |
-
----
-
-## PHASE 2 — Database + Frontend _(June 25–26)_
-
-> Gendell builds the Airtable database. Inde initializes the Next.js project. They work in parallel.
-
-### Gendell — Airtable Database
-
-| # | Task | Detail |
-|---|---|---|
-| 1 | Build `Demandes` table | Fields: Name, Company, Email, Phone, Departure, Destination, Date, Passengers, TripType, Urgency, Comment, Status, CompletenessScore, CreatedAt |
-| 2 | Build `Matrices` table | Fields: SeasonalityCoeff, UrgencyCoeff, CapacityCoeff, Margin — these are editable by the client without touching code |
-| 3 | Build `Devis` table | Fields: LeadID, PrixHT, TVA, PrixTTC, Status, PDFUrl, SentAt, RelanceCount, NextRelanceAt |
-| 4 | Build `Clients` table | Fields: Name, Company, Email, Phone, History |
-| 5 | Set up Airtable Interface | Click "Interfaces" tab → create a dashboard with views: leads by status / new this week / awaiting follow-up |
-
-### Inde — Next.js Project
-
-| # | Task | Detail |
-|---|---|---|
-| 1 | Initialize the project | In the `neotravel` folder: `npx create-next-app@latest . --typescript --tailwind --app` |
-| 2 | Create folders | Create `components/` and `lib/` at the root |
-| 3 | Create `.env.local` | At the root (never commit this file): add `RESEND_API_KEY=` and `N8N_WEBHOOK_URL=` (get URL from Gendell in Phase 3) |
-| 4 | Push to GitHub | `git add . && git commit -m "feat: init next.js" && git push` |
-| 5 | Connect to Vercel | vercel.com → New Project → Import from GitHub → select `boolshyt/neotravel` → Deploy |
+| #   | Qui         | Tâche                          | Détail                                                                                                                                                              |
+| --- | ----------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Gendell** | Lire le brouillon complet      | Ouvrir `L1_DOSSIER_DE_CADRAGE.md` et lire les 9 sections                                                                                                            |
+| 2   | **Gendell** | Pousser sur GitHub             | `git add . && git commit -m "docs: brouillon L1" && git push` pour que l'équipe puisse y accéder                                                                    |
+| 3   | **Inde**    | Récupérer le dépôt             | `git pull` pour obtenir la dernière version                                                                                                                          |
+| 4   | **Inde**    | Rédiger la Section 2.1         | Ajouter 2–3 paragraphes en français dans la Section 2.1 : ce que fait NeoTravel aujourd'hui, pourquoi le processus manuel est un problème, ce que l'automatisation change |
+| 5   | **Inde**    | Pousser ses modifications      | `git add L1_DOSSIER_DE_CADRAGE.md && git commit -m "docs: ajout analyse métier" && git push`                                                                         |
+| 6   | **Yahia**   | Récupérer le dépôt             | `git pull` pour obtenir la dernière version                                                                                                                          |
+| 7   | **Yahia**   | Rédiger la section concurrents | Dans la Section 9, ajouter 2–3 exemples de concurrents (nom + une ligne chacun — ex. GetTransfer, Mozio, Autocars.com)                                              |
+| 8   | **Yahia**   | Pousser ses modifications      | `git add L1_DOSSIER_DE_CADRAGE.md && git commit -m "docs: ajout veille concurrentielle" && git push`                                                                 |
+| 9   | **Gendell** | Relecture finale               | Récupérer la dernière version, lire le document complet avec tous les ajouts, corriger ce qui ne va pas                                                              |
+| 10  | **Gendell** | Soumettre                      | Exporter en PDF et soumettre sur la plateforme Epitech avant le **24 juin à 23h59**                                                                                  |
 
 ---
 
-## PHASE 3 — Automation + Conversational Form _(June 26–27)_
+## PHASE 1 — Configuration Dev _(24–25 juin, après soumission du L1)_
 
-> Gendell builds the n8n workflows. Inde builds the multi-step form. They work in parallel.
+> Configuration unique pour que tout le monde puisse lancer le projet en local. Tout est gratuit — pas de carte bancaire nécessaire.
 
-### Gendell — n8n Workflows
-
-**Workflow 1 — Lead Qualification**
-
-| # | Task | Detail |
+| Compte / Outil | Qui | Comment |
 |---|---|---|
-| 1 | Create workflow | n8n → New Workflow → name it "Lead Qualification" |
-| 2 | Add Webhook node | Entry point — copy the webhook URL and share it with Inde |
-| 3 | Add Airtable node | Save lead immediately → base "NeoTravel CRM" → table "Demandes" → Status: "New Lead" |
-| 4 | Add Gemini node | Google Gemini Chat Model → connect API key → model `gemini-2.0-flash` → check completeness score + passenger count |
-| 5 | Write system prompt | Role, rules, tone (see `project/PROJECT_RULES.md`) — AI only evaluates completeness, never calculates prices |
-| 6 | Add If node (passengers) | If passengers > 85 → update Status: "Complex Case" → send acknowledgment email → stop |
-| 7 | Add If node (completeness) | If score < 70% → update Status: "Incomplete" → send clarification email → stop |
-| 8 | Add Code node | Implement `calculer_devis()` (full formula in `project/PRICING_ENGINE.md`) — takes distance_km from form data |
-| 9 | Add PDF generation | Generate quote PDF from calculer_devis() output |
-| 10 | Add Resend node | Send email + PDF to client |
-| 11 | Add Airtable update node | Status: "Quote Sent" → set NextRelanceAt (J+2 if urgent, J+3 if standard) |
-| 12 | Test | Submit fake form data → confirm lead in Airtable + email received with PDF |
-
-**Workflow 2 — Follow-up Scheduler**
-
-| # | Task | Detail |
-|---|---|---|
-| 1 | Create workflow | New Workflow → name it "Follow-up Scheduler" |
-| 2 | Add Schedule Trigger | Every 2 minutes (demo) — change to daily for production |
-| 3 | Add Airtable node | Query: Status = "Quote Sent" OR "Follow-up 1" AND NextRelanceAt ≤ today |
-| 4 | Add If node | RelanceCount < 2 → true: send follow-up email / false: update Status to "Closed" |
-| 5 | Add Resend node | Send follow-up email (true branch only) |
-| 6 | Add Airtable update node | RelanceCount +1 → update Status ("Follow-up 1" or "Follow-up 2") → set new NextRelanceAt |
-
-### Inde — Conversational Form
-
-| # | Task | Detail |
-|---|---|---|
-| 1 | Build multi-step form | One question per screen, progress bar, French copy — steps: client type → name → email → phone → departure → destination → date → passengers → trip type → urgency → **distance approximative (km)** → comment → confirmation |
-| 2 | Connect to n8n | On submit: POST form data as JSON to the `N8N_WEBHOOK_URL` from `.env.local` (get URL from Gendell) |
-| 3 | Test | Submit the form → ask Gendell to confirm the lead appeared in Airtable |
-| 4 | Push | `git add . && git commit -m "feat: add lead capture form" && git push` |
+| **Clé API Gemini** | Gendell | Aller sur [aistudio.google.com](https://aistudio.google.com) → se connecter → Obtenir une clé API → la sauvegarder |
+| **Node.js** | Gendell + Inde | Télécharger la version LTS sur [nodejs.org](https://nodejs.org) → installer → vérifier : `node --version` |
+| **n8n** | Gendell | Dans le terminal : `npm install n8n -g` puis `n8n start` → ouvrir [localhost:5678](http://localhost:5678) |
+| **Compte Airtable** | Gendell | S'inscrire sur [airtable.com](https://airtable.com) → créer une base appelée **"NeoTravel CRM"** |
+| **Clé API Airtable** | Gendell | Icône profil → Compte → API → générer un token d'accès personnel → le sauvegarder |
+| **Collaborateurs GitHub** | Gendell | Paramètres → Collaborateurs → ajouter les noms GitHub d'Inde et Yahia |
+| **Vercel** | Inde | S'inscrire sur [vercel.com](https://vercel.com) avec le compte GitHub |
+| **Resend** | Inde | S'inscrire sur [resend.com](https://resend.com) → Clés API → créer une clé → la sauvegarder |
+| **Cloner le dépôt** | Inde + Yahia | `git clone https://github.com/boolshyt/neotravel.git` |
 
 ---
 
-## PHASE 4 — Email + PDF _(June 27–28)_
+## PHASE 2 — Base de données + Frontend _(25–26 juin)_
 
-> Full flow: form → AI → quote → PDF → email. Inde writes templates, Gendell wires them in.
+> Gendell construit la base Airtable. Inde initialise le projet Next.js. Ils travaillent en parallèle.
 
-| Who | Task | Detail |
+### Gendell — Base de données Airtable
+
+| # | Tâche | Détail |
 |---|---|---|
-| **Inde** | Write email template | HTML, French, professional: quote HT/TVA/TTC, trip details, CTA to confirm or call, NeoTravel contact info |
-| **Inde** | Write PDF template | NeoTravel header, client details, trip details, full price breakdown, validity date, signature area |
-| **Inde** | Share Resend API key | Send it to Gendell — he needs it for the n8n email node |
-| **Gendell** | Connect email in n8n | Wire the Resend node with Inde's key → confirm emails send correctly |
-| **Both** | End-to-end test | Submit form → verify email is received with PDF attached → check content looks correct |
+| 1 | Créer la table `Demandes` | Champs : Nom, Société, Email, Téléphone, Départ, Destination, Date, Passagers, TypeTrajet, Urgence, Commentaire, Statut, ScoreComplétude, CréeLe |
+| 2 | Créer la table `Matrices` | Champs : CoeffSaisonnalité, CoeffUrgence, CoeffCapacité, Marge — modifiables par le client sans toucher au code |
+| 3 | Créer la table `Devis` | Champs : IDLead, PrixHT, TVA, PrixTTC, Statut, URLPdf, EnvoyéLe, NbRelances, ProchaineRelanceLe |
+| 4 | Créer la table `Clients` | Champs : Nom, Société, Email, Téléphone, Historique |
+| 5 | Configurer l'Interface Airtable | Cliquer sur l'onglet "Interfaces" → créer un tableau de bord avec les vues : leads par statut / nouveaux cette semaine / en attente de relance |
+
+### Inde — Projet Next.js
+
+| # | Tâche | Détail |
+|---|---|---|
+| 1 | Initialiser le projet | Dans le dossier `neotravel` : `npx create-next-app@latest . --typescript --tailwind --app` |
+| 2 | Créer les dossiers | Créer `components/` et `lib/` à la racine |
+| 3 | Créer `.env.local` | À la racine (ne jamais committer ce fichier) : ajouter `RESEND_API_KEY=` et `N8N_WEBHOOK_URL=` (obtenir l'URL de Gendell en Phase 3) |
+| 4 | Pousser sur GitHub | `git add . && git commit -m "feat: init next.js" && git push` |
+| 5 | Connecter à Vercel | vercel.com → Nouveau Projet → Importer depuis GitHub → sélectionner `boolshyt/neotravel` → Déployer |
 
 ---
 
-## PHASE 5 — Testing + Demo Prep _(June 28–29)_
+## PHASE 3 — Automatisation + Formulaire Conversationnel _(26–27 juin)_
 
-> All 5 demo scenarios must run cleanly before June 29. L2 + L3 submitted June 29 at 23:59.
+> Gendell construit les workflows n8n. Inde construit le formulaire multi-étapes. Ils travaillent en parallèle.
 
-### Demo Scenarios — run all 5
+### Gendell — Workflows n8n
 
-| # | Scenario | What to verify |
+**Workflow 1 — Qualification des Leads**
+
+| # | Tâche | Détail |
 |---|---|---|
-| 1 | **Happy path** — complete data submitted | Lead in Airtable, quote generated, email + PDF received |
-| 2 | **Incomplete data** — missing a required field | AI asks for the missing info, completes on retry |
-| 3 | **>85 passengers** — enter 100 passengers | Routes to "Cas Complexe", no auto-quote, human alert sent |
-| 4 | **Follow-up** — submit a lead, wait 2 minutes | Follow-up email arrives automatically |
-| 5 | **Dashboard** — open Airtable Interface | Pipeline shows leads by status, new this week, follow-ups pending |
+| 1 | Créer le workflow | n8n → Nouveau Workflow → le nommer "Qualification des Leads" |
+| 2 | Ajouter un nœud Webhook | Point d'entrée — copier l'URL du webhook et la partager avec Inde |
+| 3 | Ajouter un nœud Airtable | Sauvegarder le lead immédiatement → base "NeoTravel CRM" → table "Demandes" → Statut : "Nouveau Lead" |
+| 4 | Ajouter un nœud Gemini | Google Gemini Chat Model → connecter la clé API → modèle `gemini-2.0-flash` → vérifier le score de complétude + nombre de passagers |
+| 5 | Rédiger le prompt système | Rôle, règles, ton (voir `project/PROJECT_RULES.md`) — l'IA évalue uniquement la complétude, ne calcule jamais les prix |
+| 6 | Ajouter un nœud If (passagers) | Si passagers > 85 → mettre à jour Statut : "Cas Complexe" → envoyer email d'accusé → arrêter |
+| 7 | Ajouter un nœud If (complétude) | Si score < 70% → mettre à jour Statut : "Incomplet" → envoyer email de clarification → arrêter |
+| 8 | Ajouter un nœud Code | Implémenter `calculer_devis()` (formule complète dans `project/PRICING_ENGINE.md`) — prend distance_km depuis les données du formulaire |
+| 9 | Ajouter la génération PDF | Générer le devis PDF à partir de la sortie de calculer_devis() |
+| 10 | Ajouter un nœud Resend | Envoyer l'email + PDF au client |
+| 11 | Ajouter un nœud de mise à jour Airtable | Statut : "Devis Envoyé" → définir ProchaineRelanceLe (J+2 si urgent, J+3 si standard) |
+| 12 | Tester | Soumettre de fausses données → confirmer le lead dans Airtable + email reçu avec PDF |
 
-### Who does what
+**Workflow 2 — Planificateur de Relances**
 
-| Who         | Task                     | Detail                                                                                     |
-| ----------- | ------------------------ | ------------------------------------------------------------------------------------------ |
-| **Gendell** | Run all 5 scenarios      | Fix anything that breaks                                                                   |
-| **Gendell** | Set up ngrok             | `npm install -g ngrok` → `ngrok http 5678` → share public URL with Inde for live demo      |
-| **Gendell** | Confirm dashboard        | Airtable Interface shows pipeline correctly                                                |
-| **Inde**    | Write L3 — technical doc | How to install and run the system from scratch: clone, env setup, n8n start, next.js start |
-| **Inde**    | Write L3 — usage doc     | How a salesperson uses the Airtable dashboard day-to-day (non-technical)                   |
-| **Inde**    | Submit L2 + L3           | Before **June 29 at 23:59**                                                                |
-| **Yahia**   | Test as a real client    | Submit 3 requests (standard, urgent, >85 passengers) → report what worked and what didn't  |
+| # | Tâche | Détail |
+|---|---|---|
+| 1 | Créer le workflow | Nouveau Workflow → le nommer "Planificateur de Relances" |
+| 2 | Ajouter un Déclencheur Planifié | Toutes les 2 minutes (démo) — passer en quotidien pour la production |
+| 3 | Ajouter un nœud Airtable | Requête : Statut = "Devis Envoyé" OU "Relance 1" ET ProchaineRelanceLe ≤ aujourd'hui |
+| 4 | Ajouter un nœud If | relance_count < 2 → vrai : envoyer email de relance / faux : mettre à jour Statut en "Clôturé" |
+| 5 | Ajouter un nœud Resend | Envoyer l'email de relance (branche vraie uniquement) |
+| 6 | Ajouter un nœud de mise à jour Airtable | relance_count +1 → mettre à jour le Statut ("Relance 1" ou "Relance 2") → définir la nouvelle ProchaineRelanceLe |
+
+### Inde — Formulaire Conversationnel
+
+| # | Tâche | Détail |
+|---|---|---|
+| 1 | Construire le formulaire multi-étapes | Une question par écran, barre de progression, copie en français — étapes : type de client → nom → email → téléphone → départ → destination → date → passagers → type de trajet → urgence → **distance approximative (km)** → commentaire → confirmation |
+| 2 | Connecter à n8n | À la soumission : envoyer les données du formulaire en JSON via POST à `N8N_WEBHOOK_URL` dans `.env.local` (obtenir l'URL de Gendell) |
+| 3 | Tester | Soumettre le formulaire → demander à Gendell de confirmer que le lead est apparu dans Airtable |
+| 4 | Pousser | `git add . && git commit -m "feat: ajout formulaire de capture" && git push` |
 
 ---
 
-## PHASE 6 — Slides + Oral Prep _(June 29–30, due June 30 at 23:59)_
+## PHASE 4 — Email + PDF _(27–28 juin)_
 
-### Slide Structure (Yahia leads)
+> Flux complet : formulaire → IA → devis → PDF → email. Inde rédige les templates, Gendell les intègre.
 
-| Slide | Content |
+| Qui | Tâche | Détail |
+|---|---|---|
+| **Inde** | Rédiger le template email | HTML, français, professionnel : devis HT/TVA/TTC, détails du trajet, CTA pour confirmer ou appeler, coordonnées NeoTravel |
+| **Inde** | Rédiger le template PDF | En-tête NeoTravel, coordonnées client, détails du trajet, décomposition complète du prix, date de validité, zone de signature |
+| **Inde** | Partager la clé Resend API | L'envoyer à Gendell — il en a besoin pour le nœud email n8n |
+| **Gendell** | Connecter l'email dans n8n | Configurer le nœud Resend avec la clé d'Inde → confirmer que les emails s'envoient correctement |
+| **Les deux** | Test bout en bout | Soumettre le formulaire → vérifier la réception de l'email avec PDF joint → contrôler que le contenu est correct |
+
+---
+
+## PHASE 5 — Tests + Préparation Démo _(28–29 juin)_
+
+> Les 5 scénarios de démo doivent tourner proprement avant le 29 juin. L2 + L3 soumis le 29 juin à 23h59.
+
+### Scénarios de Démo — passer les 5
+
+| # | Scénario | Ce qu'il faut vérifier |
+|---|---|---|
+| 1 | **Parcours nominal** — données complètes soumises | Lead dans Airtable, devis généré, email + PDF reçus |
+| 2 | **Données incomplètes** — un champ obligatoire manquant | L'IA demande l'info manquante, complété à la relance |
+| 3 | **>85 passagers** — saisir 100 passagers | Bascule en "Cas Complexe", aucun devis auto, alerte humaine envoyée |
+| 4 | **Relance** — soumettre un lead, attendre 2 minutes | L'email de relance arrive automatiquement |
+| 5 | **Tableau de bord** — ouvrir Airtable Interface | Le pipeline affiche les leads par statut, les nouveaux de la semaine, les relances en attente |
+
+### Qui fait quoi
+
+| Qui         | Tâche                        | Détail                                                                                          |
+| ----------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Gendell** | Passer les 5 scénarios       | Corriger tout ce qui casse                                                                      |
+| **Gendell** | Configurer ngrok              | `npm install -g ngrok` → `ngrok http 5678` → partager l'URL publique avec Inde pour la démo live |
+| **Gendell** | Confirmer le tableau de bord  | L'Interface Airtable affiche le pipeline correctement                                            |
+| **Inde**    | Rédiger L3 — doc technique    | Comment installer et lancer le système de zéro : clone, config env, démarrage n8n et next.js    |
+| **Inde**    | Rédiger L3 — doc utilisation  | Comment un commercial utilise le tableau de bord Airtable au quotidien (non-technique)           |
+| **Inde**    | Soumettre L2 + L3             | Avant le **29 juin à 23h59**                                                                     |
+| **Yahia**   | Tester en tant que vrai client | Soumettre 3 demandes (standard, urgente, >85 passagers) → rapporter ce qui a fonctionné et ce qui n'a pas fonctionné |
+
+---
+
+## PHASE 6 — Diapositives + Préparation Oral _(29–30 juin, rendu le 30 juin à 23h59)_
+
+### Structure des Diapositives (Yahia en charge)
+
+| Diapositive | Contenu |
 |---|---|
-| 1 | Title — NeoTravel · team names · MBA1 Epitech · July 1, 2026 |
-| 2–3 | The problem — 60 leads/day, manual process, missed revenue |
-| 4–5 | The solution — architecture diagram + the 10 functions |
-| 6 | Demo flow — what happens when a client submits the form |
-| 7 | Business impact — leads treated, time saved, follow-up rate |
-| 8 | Technical choices and why |
-| 9 | What we'd build next (roadmap) |
-| 10 | Q&A |
+| 1 | Titre — NeoTravel · noms de l'équipe · MBA1 Epitech · 1er juillet 2026 |
+| 2–3 | Le problème — 60 leads/jour, processus manuel, chiffre d'affaires manqué |
+| 4–5 | La solution — schéma d'architecture + les 10 fonctions |
+| 6 | Flux de démo — ce qui se passe quand un client soumet le formulaire |
+| 7 | Impact métier — leads traités, temps économisé, taux de relance |
+| 8 | Choix techniques et justifications |
+| 9 | Ce qu'on construirait ensuite (roadmap) |
+| 10 | Questions / Réponses |
 
-### Jury Q&A — prepare answers
+### Questions du Jury — préparer les réponses
 
-| Question | Who answers |
+| Question | Qui répond |
 |---|---|
-| What business problem does this solve? | Yahia |
-| Why n8n over other tools? | Gendell |
-| How does the system preserve the human relationship? | Inde |
-| What would NeoTravel need to do to put this in production? | All 3 |
-| Walk me through what happens when a lead submits the form | Gendell |
+| Quel problème métier ce projet résout-il ? | Yahia |
+| Pourquoi n8n plutôt que d'autres outils ? | Gendell |
+| Comment le système préserve-t-il la relation humaine ? | Inde |
+| Qu'est-ce que NeoTravel devrait faire pour le mettre en production ? | Tous les 3 |
+| Décrivez ce qui se passe quand un lead soumet le formulaire | Gendell |
 
-### Oral prep
+### Préparation à l'oral
 
-| Task | Who | When |
+| Tâche | Qui | Quand |
 |---|---|---|
-| Assign speaking sections | All 3 | June 29 |
-| First rehearsal (full demo included) | All 3 | June 30 morning |
-| Second rehearsal | All 3 | June 30 evening |
+| Attribuer les parties de discours | Tous les 3 | 29 juin |
+| Première répétition (démo live incluse) | Tous les 3 | Matin du 30 juin |
+| Deuxième répétition | Tous les 3 | Soir du 30 juin |
 
 ---
 
-## Git — Stay in Sync
+## Git — Rester Synchronisé
 
 ```bash
-# Before starting work
+# Avant de commencer à travailler
 git pull
 
-# After finishing
+# Après avoir terminé
 git add .
-git commit -m "short description of what you did"
+git commit -m "description courte de ce que vous avez fait"
 git push
 ```

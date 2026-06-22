@@ -1,31 +1,31 @@
-# NeoTravel — Commercial Chain Automation
+# NeoTravel — Automatisation de la Chaîne Commerciale
 
-> MBA1 Epitech — Group Project | July 2026
-> **Team:** Gendell · Inde · Yahia
-
----
-
-## What This Is
-
-NeoTravel is a group transport intermediary (France, since 2010) that receives ~60 leads/day but processes them entirely by hand — missing leads, slow quotes, no follow-up automation.
-
-This project automates the full commercial chain:
-
-**Lead capture → AI qualification → Deterministic pricing → PDF quote → Email → Automated follow-ups → Dashboard**
+> MBA1 Epitech — Projet de groupe | Juillet 2026
+> **Équipe :** Gendell · Inde · Yahia
 
 ---
 
-## Stack
+## Présentation
 
-| Layer | Tool |
+NeoTravel est un intermédiaire en transport de groupe (France, depuis 2010) qui reçoit ~60 leads/jour mais les traite entièrement à la main — leads manqués, devis lents, aucune relance automatique.
+
+Ce projet automatise la chaîne commerciale complète :
+
+**Capture du lead → Qualification IA → Tarification déterministe → Devis PDF → Email → Relances automatiques → Tableau de bord**
+
+---
+
+## Stack Technique
+
+| Couche | Outil |
 |---|---|
-| Frontend | Next.js (React) — deployed on Vercel |
-| Automation & AI orchestration | n8n (self-hosted) |
-| Language model | Gemini 2.0 Flash (Google) — free tier |
-| CRM & Dashboard | Airtable |
-| Email delivery | Resend |
+| Frontend | Next.js (React) — déployé sur Vercel |
+| Automatisation & orchestration IA | n8n (auto-hébergé) |
+| Modèle de langage | Gemini 2.0 Flash (Google) — tier gratuit |
+| CRM & Tableau de bord | Airtable |
+| Envoi d'emails | Resend |
 
-**Total cost: €0/month** — all free tiers.
+**Coût total : 0 €/mois** — tous en tier gratuit.
 
 ---
 
@@ -33,26 +33,26 @@ This project automates the full commercial chain:
 
 ```mermaid
 flowchart TD
-    A([🖥️ Next.js Form\nname · email · departure · destination · distance · passengers]) -->|POST JSON| B
+    A([🖥️ Formulaire Next.js\nnom · email · départ · destination · distance · passagers]) -->|POST JSON| B
 
-    subgraph WF1 ["⚙️ n8n — Workflow 1 : Lead Qualification"]
-        B[Webhook] --> C[Save to Airtable\nStatus: New Lead]
-        C --> D{{"🤖 Gemini AI\nCheck completeness + passenger count"}}
+    subgraph WF1 ["⚙️ n8n — Workflow 1 : Qualification des Leads"]
+        B[Webhook] --> C[Sauvegarde dans Airtable\nStatut : Nouveau Lead]
+        C --> D{{"🤖 Gemini IA\nVérif. complétude + nombre passagers"}}
 
-        D -->|passengers > 85| E[❌ Complex Case\nAck email → Alert sales team]
-        D -->|score < 70%| F[⚠️ Incomplete\nClarification email → Human takes over]
-        D -->|score ≥ 70% AND pax ≤ 85| G
+        D -->|passagers > 85| E[❌ Cas Complexe\nEmail d'accusé → Alerte équipe commerciale]
+        D -->|score < 70%| F[⚠️ Incomplet\nEmail de clarification → Prise en charge humaine]
+        D -->|score ≥ 70% ET pax ≤ 85| G
 
-        G[calculer_devis\ndistance · passengers · date · urgency · trip type] --> H[Generate PDF quote]
-        H --> I[Send email + PDF via Resend]
-        I --> J[Status: Quote Sent\nSet next_followup_at]
+        G[calculer_devis\ndistance · passagers · date · urgence · type trajet] --> H[Génération du devis PDF]
+        H --> I[Envoi email + PDF via Resend]
+        I --> J[Statut : Devis Envoyé\nPlanification prochaine_relance]
     end
 
-    subgraph WF2 ["🕐 n8n — Workflow 2 : Follow-up Scheduler"]
-        K[Schedule Trigger\nevery 2 min demo · daily prod] --> L[Fetch Airtable\nStatus = Quote Sent or Follow-up 1\nAND next_followup_at ≤ today]
-        L --> M{relance_count < 2?}
-        M -->|YES| N[Send follow-up email\nrelance_count + 1 · update status]
-        M -->|NO| O[Status: Closed]
+    subgraph WF2 ["🕐 n8n — Workflow 2 : Planificateur de Relances"]
+        K[Déclencheur Planifié\ntoutes les 2 min démo · quotidien prod] --> L[Récupération Airtable\nStatut = Devis Envoyé ou Relance 1\nET prochaine_relance ≤ aujourd'hui]
+        L --> M{relance_count < 2 ?}
+        M -->|OUI| N[Envoi email de relance\nrelance_count + 1 · mise à jour statut]
+        M -->|NON| O[Statut : Clôturé]
     end
 
     J --> K
@@ -62,32 +62,32 @@ flowchart TD
     N --> AT
     O --> AT
 
-    AT[("🗄️ Airtable CRM\nCentral state layer\nDashboard via Airtable Interface")]
+    AT[("🗄️ Airtable CRM\nCouche d'état centrale\nTableau de bord via Airtable Interface")]
 ```
 
-### Key rule: the AI never calculates prices
+### Règle clé : l'IA ne calcule jamais les prix
 
-All pricing goes through `calculer_devis()` — a pure deterministic function. The AI only evaluates completeness and routes leads. It never estimates or approximates a price.
+Toute la tarification passe par `calculer_devis()` — une fonction déterministe pure. L'IA évalue uniquement la complétude et oriente les leads. Elle n'estime ni n'approxime jamais un prix.
 
 ---
 
-## Pipeline Statuses
+## Statuts du Pipeline
 
 ```
-New Lead → Incomplete → Quote Sent → Follow-up 1 → Follow-up 2 → Closed
-                                                              ↘ Complex Case
+Nouveau Lead → Incomplet → Devis Envoyé → Relance 1 → Relance 2 → Clôturé
+                                                               ↘ Cas Complexe
 ```
 
 ---
 
-## Local Setup
+## Installation Locale
 
-### Prerequisites
+### Prérequis
 - Node.js LTS — [nodejs.org](https://nodejs.org)
 - n8n — `npm install n8n -g`
 - Git — [git-scm.com](https://git-scm.com)
 
-### Clone and install
+### Cloner et installer
 
 ```bash
 git clone https://github.com/boolshyt/neotravel.git
@@ -95,62 +95,62 @@ cd neotravel
 npm install
 ```
 
-### Environment variables
+### Variables d'environnement
 
-Create a `.env.local` file at the root (never commit this):
+Créer un fichier `.env.local` à la racine (ne jamais le committer) :
 
 ```
-RESEND_API_KEY=your_resend_key
-N8N_WEBHOOK_URL=your_n8n_webhook_url
+RESEND_API_KEY=votre_clé_resend
+N8N_WEBHOOK_URL=votre_url_webhook_n8n
 ```
 
-### Run locally
+### Lancer en local
 
 ```bash
-# Start n8n (keep this terminal open)
+# Démarrer n8n (garder ce terminal ouvert)
 n8n start
 
-# Start Next.js (in a separate terminal)
+# Démarrer Next.js (dans un second terminal)
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) for the form.
-Open [http://localhost:5678](http://localhost:5678) for n8n.
+Ouvrir [http://localhost:3000](http://localhost:3000) pour le formulaire.
+Ouvrir [http://localhost:5678](http://localhost:5678) pour n8n.
 
-### For the live demo
+### Pour la démonstration live
 
-Expose n8n to the internet so the form can reach it:
+Exposer n8n sur internet pour que le formulaire puisse l'atteindre :
 
 ```bash
 npx ngrok http 5678
 ```
 
-Copy the ngrok URL → paste it as `N8N_WEBHOOK_URL` in `.env.local`.
+Copier l'URL ngrok → la coller dans `N8N_WEBHOOK_URL` dans `.env.local`.
 
 ---
 
-## Repository Structure
+## Structure du Dépôt
 
 ```
 neotravel/
-├── README.md                    # This file
-├── TASKS.md                     # Task board — who does what and when
-├── L1_DOSSIER_DE_CADRAGE.md     # L1 deliverable (due June 24)
-├── PROJECT_GUIDE.md             # Full project reference guide
+├── README.md                    # Ce fichier
+├── TASKS.md                     # Tableau des tâches — qui fait quoi et quand
+├── L1_DOSSIER_DE_CADRAGE.md     # Livrable L1 (rendu le 24 juin)
+├── PROJECT_GUIDE.md             # Guide de référence complet du projet
 ├── project/
-│   ├── PRICING_ENGINE.md        # calculer_devis() spec and all pricing tables
-│   └── PROJECT_RULES.md        # Rules checklist and guardrails
+│   ├── PRICING_ENGINE.md        # Spécification calculer_devis() et tables tarifaires
+│   └── PROJECT_RULES.md         # Checklist des règles et garde-fous
 ├── .gitignore
-└── .env.local                   # API keys — local only, never committed
+└── .env.local                   # Clés API — local uniquement, jamais commité
 ```
 
 ---
 
-## Deliverables
+## Livrables
 
-| Date | Deliverable |
+| Date | Livrable |
 |---|---|
-| June 24 at 23:59 | L1 — Dossier de cadrage |
-| June 29 at 23:59 | L2 — Prototype + L3 — Handoff docs |
-| June 30 at 23:59 | Presentation slides |
-| July 1 | Live presentation + demo |
+| 24 juin à 23h59 | L1 — Dossier de cadrage |
+| 29 juin à 23h59 | L2 — Prototype + L3 — Documentation de passation |
+| 30 juin à 23h59 | Diapositives de présentation |
+| 1er juillet | Présentation live + démo |

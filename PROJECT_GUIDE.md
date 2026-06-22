@@ -1,781 +1,769 @@
-# NeoTravel — Complete Project Guide
-> **MBA1 Epitech · Automation of Commercial Processes**
-> Team: Gendell, Inde, Yahia | Kickoff: June 22, 2026 | Presentation: July 1, 2026
+# NeoTravel — Guide Complet du Projet
+> **MBA1 Epitech · Automatisation des Processus Commerciaux**
+> Équipe : Gendell, Inde, Yahia | Lancement : 22 juin 2026 | Présentation : 1er juillet 2026
 
 ---
 
-## Table of Contents
+## Table des Matières
 
-1. [Project Summary](#1-project-summary)
-2. [Company and Industry Context](#2-company-and-industry-context)
-3. [What You Are Actually Building](#3-what-you-are-actually-building)
-4. [Concepts and Topics to Learn](#4-concepts-and-topics-to-learn)
-5. [Resources](#5-resources)
-6. [Priority Breakdown](#6-priority-breakdown)
-7. [Tools Guide](#7-tools-guide)
-8. [Rules Guidelines and Checklist](#8-rules-guidelines-and-checklist)
-9. [Critical Rules That Can Kill the Project](#9-critical-rules-that-can-kill-the-project)
-10. [Reading Between the Lines](#10-reading-between-the-lines)
-11. [Decisions to Agree On Before Building](#11-decisions-to-agree-on-before-building)
-12. [Project Phases and Task Organization](#12-project-phases-and-task-organization)
-13. [Workspace and Atelier Setup](#13-workspace-and-atelier-setup)
-14. [Chatbot vs Form](#14-chatbot-vs-form)
-15. [Grading Breakdown](#15-grading-breakdown)
-16. [Deadlines](#16-deadlines)
+1. [Résumé du Projet](#1-résumé-du-projet)
+2. [Contexte de l'Entreprise et du Secteur](#2-contexte-de-lentreprise-et-du-secteur)
+3. [Ce Que Vous Construisez Réellement](#3-ce-que-vous-construisez-réellement)
+4. [Concepts et Sujets à Apprendre](#4-concepts-et-sujets-à-apprendre)
+5. [Ressources](#5-ressources)
+6. [Priorités](#6-priorités)
+7. [Guide des Outils](#7-guide-des-outils)
+8. [Règles, Recommandations et Checklist](#8-règles-recommandations-et-checklist)
+9. [Règles Critiques Qui Peuvent Faire Échouer le Projet](#9-règles-critiques-qui-peuvent-faire-échouer-le-projet)
+10. [Lire Entre les Lignes](#10-lire-entre-les-lignes)
+11. [Décisions à Prendre Avant de Construire](#11-décisions-à-prendre-avant-de-construire)
+12. [Phases du Projet et Organisation des Tâches](#12-phases-du-projet-et-organisation-des-tâches)
+13. [Configuration de l'Espace de Travail](#13-configuration-de-lespace-de-travail)
+14. [Chatbot vs Formulaire](#14-chatbot-vs-formulaire)
+15. [Répartition des Notes](#15-répartition-des-notes)
+16. [Échéances](#16-échéances)
 
 ---
 
-## 1. Project Summary
+## 1. Résumé du Projet
 
-NeoTravel is a group transport intermediary founded in 2010 (Levallois-Perret, France). They coordinate coach and bus partners for individuals, businesses, and public organizations — but own no vehicles themselves.
+NeoTravel est un intermédiaire en transport de groupe fondé en 2010 (Levallois-Perret, France). Il coordonne des partenaires autocaristes pour des particuliers, des entreprises et des organisations publiques — mais ne possède aucun véhicule.
 
-**The problem:** NeoTravel receives ~60 leads/day. Their salespeople are commissioned, so they naturally prioritize the biggest deals. Many paid-ad leads are never contacted. The commercial process is manual, slow, and leaks revenue.
+**Le problème :** NeoTravel reçoit ~60 leads/jour. Les commerciaux sont commissionnés, donc ils privilégient naturellement les plus grosses affaires. De nombreux leads issus de publicités payantes ne sont jamais contactés. Le processus commercial est manuel, lent, et génère des pertes de revenus.
 
-**Your mission:** Build a functional prototype that automates the full commercial chain:
+**Votre mission :** Construire un prototype fonctionnel qui automatise la chaîne commerciale complète :
 
 ```
-Lead capture → Qualification → Quote generation → Quote sending → Follow-up → Dashboard
+Capture du lead → Qualification → Génération du devis → Envoi du devis → Relance → Tableau de bord
 ```
 
-This is graded on 100 points:
-- **50 pts** — Deliverables + prototype (L1, L2, L3)
-- **25 pts** — Live demo in front of jury
-- **25 pts** — Oral defense
+Noté sur 100 points :
+- **50 pts** — Livrables + prototype (L1, L2, L3)
+- **25 pts** — Démo live devant le jury
+- **25 pts** — Soutenance orale
 
-**The golden question for every decision:** *"Does this help NeoTravel better treat its leads, faster, with more traceability, without weakening the human relationship?"*
+**La question clé pour chaque décision :** *"Est-ce que ça aide NeoTravel à mieux traiter ses leads, plus vite, avec plus de traçabilité, sans affaiblir la relation humaine ?"*
 
 ---
 
-## 2. Company and Industry Context
+## 2. Contexte de l'Entreprise et du Secteur
 
-### NeoTravel at a Glance
+### NeoTravel en Bref
 
-| Detail | Info |
+| Détail | Info |
 |--------|------|
-| Founded | 2010 |
-| Model | Intermediation — no own fleet |
-| Location | 55 Rue Raspail, 92300 Levallois-Perret |
-| Website | autocar-location.com |
-| Phone | 09 80 40 04 84 |
+| Fondée | 2010 |
+| Modèle | Intermédiation — pas de flotte propre |
+| Adresse | 55 Rue Raspail, 92300 Levallois-Perret |
+| Site web | autocar-location.com |
+| Téléphone | 09 80 40 04 84 |
 | Email | reservation@autocar-location.com |
-| Coverage | 647 priority cities across 98 French departments |
+| Couverture | 647 villes prioritaires sur 98 départements français |
 
-### Vehicle Categories
-- **Minibus**: 9–19 passengers
-- **Midibus**: 20–30 passengers
-- **Standard coach**: 30–45 passengers
-- **Large coach**: 50–60 passengers
-- **Over 85 passengers**: Manual commercial handling required (no automation)
+### Catégories de Véhicules
+- **Minibus** : 9–19 passagers
+- **Midibus** : 20–30 passagers
+- **Autocar standard** : 30–45 passagers
+- **Grand autocar** : 50–60 passagers
+- **Plus de 85 passagers** : Traitement commercial manuel obligatoire (pas d'automatisation)
 
-### Internal Teams
-- **Sales team**: Receive leads, qualify, make first proposal, manage client relationship
-- **Reservation agents**: Find carrier partners, verify quality, confirm, coordinate logistics
+### Équipes Internes
+- **Équipe commerciale** : Reçoit les leads, qualifie, fait la première proposition, gère la relation client
+- **Agents de réservation** : Trouvent les transporteurs partenaires, vérifient la qualité, confirment, coordonnent la logistique
 
-### Business Constraints
-- Partner dependency: carriers have variable availability
-- Complex pricing (seasonality, urgency, capacity, options)
-- Transport regulation (driver hours, rest periods)
-- Margin pressure + disintermediation risk (clients finding carriers directly)
-- Budget: **tools must stay below €1,000/month**
-- AI budget: **€10–15 per group** (use affordable models, not GPT-4o or Claude Opus for everything)
+### Contraintes Métier
+- Dépendance aux partenaires : disponibilité variable des transporteurs
+- Tarification complexe (saisonnalité, urgence, capacité, options)
+- Réglementation transport (heures de conduite, temps de repos des chauffeurs)
+- Pression sur les marges + risque de désintermédiation (clients trouvant les transporteurs directement)
+- Budget : **les outils doivent rester sous 1 000 €/mois**
+- Budget IA : **10–15 € par groupe** (utiliser des modèles abordables, pas GPT-4o ou Claude Opus pour tout)
 
-### Core Business Values (to preserve in the system)
-Human advice · Business expertise · Reliability · Reactivity · Transparency · Responsibility
+### Valeurs Métier Fondamentales (à préserver dans le système)
+Conseil humain · Expertise métier · Fiabilité · Réactivité · Transparence · Responsabilité
 
-**The motto:** "Digitaliser sans déshumaniser" — digitalize without dehumanizing.
+**La devise :** "Digitaliser sans déshumaniser."
 
-### Why This Problem Matters
-- Problem is NOT too few leads — it's under-exploitation of existing flow
-- Commissioned salespeople cherry-pick high-value leads → paid ad leads ignored → revenue loss
-- Ad budgets are capped by operational capacity: more leads = more pressure, not more revenue
-- Automation allows treating more opportunities without growing the team
+### Pourquoi Ce Problème Est Important
+- Le problème n'est PAS un manque de leads — c'est la sous-exploitation du flux existant
+- Les commerciaux commissionnés sélectionnent les leads à haute valeur → les leads publicitaires payants sont ignorés → perte de revenus
+- Les budgets publicitaires sont limités par la capacité opérationnelle : plus de leads = plus de pression, pas plus de revenus
+- L'automatisation permet de traiter plus d'opportunités sans agrandir l'équipe
 
 ---
 
-## 3. What You Are Actually Building
+## 3. Ce Que Vous Construisez Réellement
 
-### The 10 Functions to Cover
+### Les 10 Fonctions à Couvrir
 
-1. **Lead/demand capture** — conversational interface or form
-2. **Auto-centralization in CRM** — every lead logged, no exceptions
-3. **Request qualification** — is the data complete? What's missing?
-4. **Missing info detection** — prompt client to complete the request
-5. **Auto/semi-auto quote calculation** — deterministic `calculer_devis()` function
-6. **Quote/commercial proposal generation** — PDF document
-7. **Quote sending** — automated email with PDF attachment
-8. **Follow-up system** — scheduled relances based on urgency
-9. **Commercial pipeline tracking** — dashboard with statuses
-10. **Key commercial indicator reporting** — metrics for the manager
+1. **Capture du lead/demande** — interface conversationnelle ou formulaire
+2. **Centralisation auto dans le CRM** — chaque lead enregistré, sans exception
+3. **Qualification de la demande** — les données sont-elles complètes ? Qu'est-ce qui manque ?
+4. **Détection des infos manquantes** — inviter le client à compléter la demande
+5. **Calcul auto/semi-auto du devis** — fonction déterministe `calculer_devis()`
+6. **Génération du devis/proposition commerciale** — document PDF
+7. **Envoi du devis** — email automatique avec PDF en pièce jointe
+8. **Système de relances** — relances planifiées selon l'urgence
+9. **Suivi du pipeline commercial** — tableau de bord avec statuts
+10. **Reporting des indicateurs commerciaux clés** — métriques pour le manager
 
-### Commercial Statuses (the pipeline)
-
-```
-New Lead → Incomplete → Qualified → Quote Sent → Follow-up 1 → Follow-up 2 → Accepted / Refused / Complex Case → Closed
-```
-
-### Required Data Fields
-
-| Field | Why it's needed |
-|-------|----------------|
-| Client type | Individual / business / public org |
-| Name / Company | Identity |
-| Email | Sending quote + follow-ups |
-| Phone | Contact |
-| Departure city | Route calculation |
-| Destination city | Route calculation |
-| Travel dates | Seasonality coefficient |
-| Passenger count | Vehicle type + capacity coefficient |
-| Trip type | One-way / round trip |
-| Urgency | Urgency coefficient |
-| Free comment | Context for complex cases |
-| Request status | Pipeline tracking |
-
-### Follow-up Timing Rules
-
-| Urgency | First follow-up | Second follow-up | After 2 follow-ups |
-|---------|----------------|------------------|--------------------|
-| **Urgent** | J+2 | — | Close |
-| **Standard** | J+3 | J+7 | Close |
-
-### The Target Architecture
+### Statuts Commerciaux (le pipeline)
 
 ```
-Landing Page + Chat/Form
+Nouveau Lead → Incomplet → Qualifié → Devis Envoyé → Relance 1 → Relance 2 → Accepté / Refusé / Cas Complexe → Clôturé
+```
+
+### Champs de Données Requis
+
+| Champ | Pourquoi il est nécessaire |
+|-------|---------------------------|
+| Type de client | Particulier / entreprise / organisation publique |
+| Nom / Société | Identité |
+| Email | Envoi du devis + relances |
+| Téléphone | Contact |
+| Ville de départ | Calcul du trajet |
+| Ville de destination | Calcul du trajet |
+| Dates de voyage | Coefficient de saisonnalité |
+| Nombre de passagers | Type de véhicule + coefficient de capacité |
+| Type de trajet | Aller simple / aller-retour |
+| Urgence | Coefficient d'urgence |
+| Commentaire libre | Contexte pour les cas complexes |
+| Statut de la demande | Suivi du pipeline |
+
+### Règles de Timing des Relances
+
+| Urgence | Première relance | Deuxième relance | Après 2 relances |
+|---------|-----------------|------------------|-----------------|
+| **Urgent** | J+2 | — | Clôture |
+| **Standard** | J+3 | J+7 | Clôture |
+
+### L'Architecture Cible
+
+```
+Page d'atterrissage + Chat/Formulaire
         ↓
-    AI Agent
+    Agent IA
    ↙  ↓  ↓  ↘
-Lookup  calculer_  Generate  CRM     Schedule
-Rules   devis()    PDF       Write   Relance
+Lookup  calculer_  Génération  Écriture  Planif.
+règles  devis()    PDF         CRM       relances
         ↓
-    Data Layer (Airtable or Supabase)
+    Couche de données (Airtable ou Supabase)
         ↓
-    Dashboard
+    Tableau de bord
 ```
 
-**Key distinction:** The agent **reads** rules (lookup). The **code calculates** the price.
+**Distinction clé :** L'agent **lit** les règles (lookup). Le **code calcule** le prix.
 
 ---
 
-## 4. Concepts and Topics to Learn
+## 4. Concepts et Sujets à Apprendre
 
-### Core AI Concepts
+### Concepts IA Fondamentaux
 
-| Term | What it means for this project |
-|------|-------------------------------|
-| **LLM** | The brain (GPT-4o-mini, Claude Haiku) — understands conversation, routes to tools |
-| **Token** | Unit of text consumed/produced — affects cost and the €10-15 budget per group |
-| **Context Window** | How much the LLM remembers in one session — must manage session memory |
-| **Temperature** | How random/creative the output is — use LOW (0.0–0.2) for data extraction |
-| **Prompt / System Prompt** | Instructions to the LLM — defines role, rules, guardrails, tone |
-| **Prompt Engineering** | Crafting system prompts so the agent does exactly what you want |
-| **Agent** | LLM + ability to call tools + loop until task is done |
-| **Tool/Function Calling** | The agent calls `calculer_devis()`, CRM write, PDF gen as tools |
-| **Structured Outputs / JSON Schema** | Force LLM to output valid typed data before calling tools |
-| **Session Memory** | Conversation history kept in one session (not across sessions — that's bonus) |
-| **Streaming** | Show the LLM response word-by-word in the UI as it's generated |
-| **Orchestration** | Controlling the sequence: receive → qualify → calculate → generate → send |
-| **MCP** | Model Context Protocol — standardized tool interface (advanced) |
-| **RAG** | Retrieve context from a knowledge base — e.g., reading pricing rules |
-| **Hallucination** | LLM inventing prices or data — eliminated by `calculer_devis()` guardrail |
-| **Guardrail** | Rule that prevents the LLM from doing something wrong |
-| **Deterministic vs Non-deterministic** | Code always gives same result (deterministic); LLM varies (non-deterministic) |
-| **HITL (Human-in-the-Loop)** | Escalate to human salesperson for complex/high-value cases |
-| **Prompt Injection** | Attacker puts instructions inside client message to hijack the agent |
-| **Observability/Tracing** | Logging every LLM call: prompt, response, tokens, cost, latency |
-| **Evals** | Testing the AI: code evals for `calculer_devis()`, LLM-judge for conversation |
-| **Golden Dataset** | A set of known-correct test cases to validate your system |
-| **Idempotency** | Running the same action twice doesn't send two emails or two follow-ups |
-| **Webhook** | HTTP endpoint that receives events (e.g., new form submission triggers n8n) |
+| Terme | Ce que ça signifie pour ce projet |
+|-------|----------------------------------|
+| **LLM** | Le cerveau (GPT-4o-mini, Claude Haiku) — comprend les conversations, route vers les outils |
+| **Token** | Unité de texte consommée/produite — affecte le coût et le budget 10–15 € par groupe |
+| **Fenêtre de contexte** | Ce que le LLM mémorise dans une session — gérer la mémoire de session |
+| **Température** | Degré d'aléatoire/créativité — utiliser BASSE (0,0–0,2) pour l'extraction de données |
+| **Prompt / Prompt système** | Instructions au LLM — définit le rôle, les règles, les garde-fous, le ton |
+| **Prompt Engineering** | Rédiger des prompts système pour que l'agent fasse exactement ce qu'on veut |
+| **Agent** | LLM + capacité d'appeler des outils + boucle jusqu'à la fin de la tâche |
+| **Appel d'outil / Function Calling** | L'agent appelle `calculer_devis()`, l'écriture CRM, la génération PDF comme outils |
+| **Sorties structurées / JSON Schema** | Forcer le LLM à produire des données typées valides avant d'appeler les outils |
+| **Mémoire de session** | Historique de conversation maintenu dans une session (pas entre sessions — c'est le bonus) |
+| **Streaming** | Afficher la réponse du LLM mot par mot dans l'UI au fur et à mesure |
+| **Orchestration** | Contrôler la séquence : recevoir → qualifier → calculer → générer → envoyer |
+| **MCP** | Model Context Protocol — interface d'outil standardisée (avancé) |
+| **RAG** | Récupérer du contexte depuis une base de connaissances — ex. lire les règles de tarification |
+| **Hallucination** | LLM inventant des prix ou des données — éliminé par le garde-fou `calculer_devis()` |
+| **Garde-fou** | Règle empêchant le LLM de faire quelque chose de faux |
+| **Déterministe vs Non-déterministe** | Le code donne toujours le même résultat (déterministe) ; le LLM varie (non-déterministe) |
+| **HITL (Human-in-the-Loop)** | Escalader vers le commercial humain pour les cas complexes/haute valeur |
+| **Injection de prompt** | Un attaquant met des instructions dans le message client pour détourner l'agent |
+| **Observabilité/Traçage** | Logger chaque appel LLM : prompt, réponse, tokens, coût, latence |
+| **Évals** | Tester l'IA : évals de code pour `calculer_devis()`, juge-LLM pour la conversation |
+| **Jeu de données de référence** | Un ensemble de cas de test aux résultats connus pour valider votre système |
+| **Idempotence** | Exécuter la même action deux fois n'envoie pas deux emails ou deux relances |
+| **Webhook** | Endpoint HTTP qui reçoit des événements (ex. nouvelle soumission de formulaire déclenche n8n) |
 
-### Technical Stack Concepts
+### Concepts de la Stack Technique
 
-| Term | What it is |
-|------|-----------|
-| **n8n** | Visual workflow automation tool — can host AI agents, call APIs, schedule tasks |
-| **Vercel AI SDK** | TypeScript SDK for building AI apps with Next.js — streaming, tool calling |
-| **Next.js** | React framework for full-stack web apps — used for the frontend UI |
-| **Airtable** | No-code database with built-in dashboard UI |
-| **Supabase** | Open-source Postgres with REST API, real-time, auth |
-| **Resend / Brevo** | Email sending APIs — for quotes and follow-ups |
-| **Vercel** | Platform to deploy Next.js apps (free tier works) |
-| **Zod** | TypeScript schema validation — enforce structured outputs from LLM |
-| **Pydantic** | Python equivalent of Zod — not used here (Node stack) |
+| Terme | Ce que c'est |
+|-------|-------------|
+| **n8n** | Outil d'automatisation de workflows visuel — peut héberger des agents IA, appeler des APIs, planifier des tâches |
+| **Vercel AI SDK** | SDK TypeScript pour créer des apps IA avec Next.js — streaming, appel d'outils |
+| **Next.js** | Framework React pour apps web full-stack — utilisé pour l'UI frontend |
+| **Airtable** | Base de données no-code avec UI tableau de bord intégré |
+| **Supabase** | Postgres open-source avec API REST, temps réel, auth |
+| **Resend / Brevo** | APIs d'envoi d'emails — pour les devis et relances |
+| **Vercel** | Plateforme pour déployer des apps Next.js (tier gratuit suffisant) |
+| **Zod** | Validation de schéma TypeScript — imposer des sorties structurées au LLM |
+| **Pydantic** | Équivalent Python de Zod — non utilisé ici (stack Node) |
 
 ---
 
-## 5. Resources
+## 5. Ressources
 
-### Must Read (from the project files)
+### À Lire Absolument (depuis les fichiers du projet)
 
-| Document | Purpose | Priority |
+| Document | Objectif | Priorité |
 |----------|---------|----------|
-| `Automatisation-des-processus-commerciaux-v4.pdf` | Full project context, pricing matrices, 10 functions | **READ FIRST** |
-| `4-brief-demarrage-neotravel-v5.pdf` | Starting brief, architecture, weekly plan, data model | **READ SECOND** |
-| `5-Mot_du_president_Neotravel.pdf` | Business context, constraints, values | Essential |
-| `2-faq-neotravel-v3.pdf` | 25 answered questions about the project | Essential |
-| `3-stack-technique-neotravel.pdf` | Stack A vs B comparison, tool matrix | Before coding |
-| `REGLES DE CALCUL COTATION DEVIS NEOTRAVEL.pdf` | Exact pricing tables and formulas | Before coding `calculer_devis()` |
-| `6-livret-technique-points-d-attention.pdf` | 7 key technical warnings | Before coding |
-| `1-glossaire-neotravel.pdf` | AI/tech glossary | When confused by a term |
+| `Automatisation-des-processus-commerciaux-v4.pdf` | Contexte complet du projet, matrices de tarification, 10 fonctions | **LIRE EN PREMIER** |
+| `4-brief-demarrage-neotravel-v5.pdf` | Brief de démarrage, architecture, plan hebdomadaire, modèle de données | **LIRE EN DEUXIÈME** |
+| `5-Mot_du_president_Neotravel.pdf` | Contexte métier, contraintes, valeurs | Essentiel |
+| `2-faq-neotravel-v3.pdf` | 25 questions répondues sur le projet | Essentiel |
+| `3-stack-technique-neotravel.pdf` | Comparaison Stack A vs B, matrice des outils | Avant de coder |
+| `REGLES DE CALCUL COTATION DEVIS NEOTRAVEL.pdf` | Tables et formules de tarification exactes | Avant de coder `calculer_devis()` |
+| `6-livret-technique-points-d-attention.pdf` | 7 avertissements techniques clés | Avant de coder |
+| `1-glossaire-neotravel.pdf` | Glossaire IA/tech | En cas de terme incompris |
 
-### External Resources
+### Ressources Externes
 
 **n8n**
-- https://n8n.io/integrations/ — integration list
-- https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.airtable/ — Airtable node
-- https://docs.n8n.io/advanced-ai/ — AI Agent node docs
+- https://n8n.io/integrations/ — liste des intégrations
+- https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.airtable/ — nœud Airtable
+- https://docs.n8n.io/advanced-ai/ — docs du nœud AI Agent
 
 **Vercel AI SDK (Option B)**
-- https://sdk.vercel.ai/docs — main docs
-- https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling — tool calling
+- https://sdk.vercel.ai/docs — documentation principale
+- https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling — appel d'outils
 
 **Inspiration**
-- https://mindtrip.ai — conversational travel interface (what the landing should feel like)
+- https://mindtrip.ai — interface de voyage conversationnelle (l'ambiance visée pour la landing)
 
 **Email**
-- https://resend.com/docs — Resend API (recommended, generous free tier)
-- https://www.brevo.com/fr/ — Brevo alternative
+- https://resend.com/docs — API Resend (recommandé, tier gratuit généreux)
+- https://www.brevo.com/fr/ — alternative Brevo
 
-**PDF Generation**
-- https://pptr.dev/ — Puppeteer (for HTML → PDF in Option B)
-- https://react-pdf.org/ — React PDF library
+**Génération PDF**
+- https://pptr.dev/ — Puppeteer (HTML → PDF dans l'Option B)
+- https://react-pdf.org/ — bibliothèque React PDF
 
 **Airtable**
-- https://airtable.com/developers/web/api/introduction — API docs
+- https://airtable.com/developers/web/api/introduction — docs API
 
 **Supabase**
-- https://supabase.com/docs — main docs
-- https://supabase.com/docs/guides/database/tables — creating tables
+- https://supabase.com/docs — documentation principale
+- https://supabase.com/docs/guides/database/tables — créer des tables
 
-**Grading Rubric Reference**
-- File: `7-livrables-attendus-et-modalites-soutenance-v4.pdf`
-
----
-
-## 6. Priority Breakdown
-
-### 🔴 Must Understand (Project Cannot Work Without These)
-
-1. **The `calculer_devis()` pricing engine** — exact formula, all coefficients, flat rate table. Must be coded in pure JavaScript/TypeScript with no LLM involvement. Test it isolated before connecting anything.
-
-2. **The deterministic guardrail** — LLM never calculates prices. LLM decides WHEN to call `calculer_devis()` and WHAT to pass to it. Code does the math. Always.
-
-3. **The full commercial pipeline** — 8 statuses, what triggers each transition, who acts at each step.
-
-4. **Tool/Function calling** — how the agent calls `calculer_devis()`, CRM write, PDF gen as tools. This is the core architecture.
-
-5. **HITL thresholds** — when does automation hand off to a human? (high amount, low certainty, >85 passengers, incomplete data, complex case).
-
-6. **Session memory** — how the agent remembers what the user said earlier in the same conversation.
-
-7. **Idempotency for follow-ups** — prevent sending the same follow-up email twice. Must deduplicate.
-
-8. **The data model** — Demandes, Matrices, Devis, Clients tables. Know what fields go where.
-
-### 🟡 Important (Affects Quality and Grade)
-
-9. **Structured outputs with JSON Schema / Zod** — extract typed lead data from conversation before calling tools.
-
-10. **Prompt injection defense** — separate untrusted client text from system instructions.
-
-11. **GDPR basics** — justify each data field collected, inform user of purpose, don't log PII in tests.
-
-12. **Observability** — trace each LLM call (prompt, response, tokens, cost, latency). Counts toward bonus points.
-
-13. **System prompt design** — role definition, guardrails, tone, what the agent can and cannot do.
-
-14. **The difference between n8n Option A and Vercel AI SDK Option B** — you must choose ONE and stick to it. Do not implement both.
-
-15. **Evals** — testing `calculer_devis()` with known inputs/outputs is straightforward. LLM conversation testing needs more thought.
-
-16. **PDF quote generation** — HTML template rendered as PDF, attached to email.
-
-### 🟢 Nice to Have (Bonus Points)
-
-17. Fully hosted prototype (Vercel + n8n cloud)
-18. Observability dashboard (tokens, cost, latency per call)
-19. LLM-as-judge eval system for conversational quality
-20. WhatsApp integration (out of scope for 1 week, but impressive if done)
-21. Custom Next.js dashboard instead of Airtable Interface
-22. Cross-session memory (remembering a client from a previous conversation)
+**Référence du barème de notation**
+- Fichier : `7-livrables-attendus-et-modalites-soutenance-v4.pdf`
 
 ---
 
-## 7. Tools Guide
+## 6. Priorités
 
-### Tool Decision Matrix
+### 🔴 À Comprendre Absolument (Le Projet Ne Peut Pas Fonctionner Sans Ça)
 
-| Tool                      | Required?      | Option A             | Option B         | Free Tier                 | Notes                            |
+1. **Le moteur de tarification `calculer_devis()`** — formule exacte, tous les coefficients, table de forfaits. Doit être codé en JavaScript/TypeScript pur sans aucune implication du LLM. Le tester isolément avant de connecter quoi que ce soit.
+
+2. **Le garde-fou déterministe** — le LLM ne calcule jamais les prix. Le LLM décide QUAND appeler `calculer_devis()` et QUOI lui passer. Le code fait les calculs. Toujours.
+
+3. **Le pipeline commercial complet** — 8 statuts, ce qui déclenche chaque transition, qui agit à chaque étape.
+
+4. **Appel d'outil / Function calling** — comment l'agent appelle `calculer_devis()`, l'écriture CRM, la génération PDF comme outils. C'est l'architecture centrale.
+
+5. **Seuils HITL** — quand l'automatisation passe la main à un humain ? (montant élevé, faible certitude, >85 passagers, données incomplètes, cas complexe).
+
+6. **Mémoire de session** — comment l'agent se souvient de ce que l'utilisateur a dit plus tôt dans la même conversation.
+
+7. **Idempotence pour les relances** — empêcher d'envoyer le même email de relance deux fois. Dédupliquer.
+
+8. **Le modèle de données** — tables Demandes, Matrices, Devis, Clients. Savoir quels champs vont où.
+
+### 🟡 Important (Affecte la Qualité et la Note)
+
+9. **Sorties structurées avec JSON Schema / Zod** — extraire les données de lead typées depuis la conversation avant d'appeler les outils.
+
+10. **Défense contre l'injection de prompt** — séparer le texte client non fiable des instructions système.
+
+11. **Bases RGPD** — justifier chaque champ de données collecté, informer l'utilisateur de la finalité, ne pas logger de PII dans les tests.
+
+12. **Observabilité** — tracer chaque appel LLM (prompt, réponse, tokens, coût, latence). Compte pour les points bonus.
+
+13. **Conception du prompt système** — définition du rôle, garde-fous, ton, ce que l'agent peut et ne peut pas faire.
+
+14. **La différence entre n8n Option A et Vercel AI SDK Option B** — vous devez choisir UN et rester dessus. N'implémenter pas les deux.
+
+15. **Évals** — tester `calculer_devis()` avec des entrées/sorties connues est simple. Tester la conversation LLM demande plus de réflexion.
+
+16. **Génération du devis PDF** — template HTML rendu en PDF, joint à l'email.
+
+### 🟢 Bien à Avoir (Points Bonus)
+
+17. Prototype entièrement hébergé (Vercel + n8n cloud)
+18. Tableau de bord d'observabilité (tokens, coût, latence par appel)
+19. Système d'évals LLM-as-judge pour la qualité conversationnelle
+20. Intégration WhatsApp (hors scope pour 1 semaine, mais impressionnant si fait)
+21. Tableau de bord Next.js personnalisé au lieu d'Airtable Interface
+22. Mémoire inter-sessions (se souvenir d'un client d'une conversation précédente)
+
+---
+
+## 7. Guide des Outils
+
+### Matrice de Décision des Outils
+
+| Outil                     | Requis ?       | Option A             | Option B         | Tier Gratuit              | Notes                            |
 | ------------------------- | -------------- | -------------------- | ---------------- | ------------------------- | -------------------------------- |
-| **GitHub**                | ✅ Yes          | Yes                  | Yes              | Free                      | Version control is graded        |
-| **n8n**                   | ✅ Yes          | Brain                | Back-office      | Free (self-hosted)        | Run locally with tunnel for demo |
-| **Next.js / React**       | ✅ Yes          | Frontend             | Frontend + brain | Free                      | The UI layer                     |
-| **Vercel**                | ✅ Yes          | Deploy               | Deploy           | Free tier                 | Auto-deploys from GitHub         |
-| **Airtable**              | Option A only  | Database + dashboard | No               | Free tier                 | No-code dashboard is the appeal  |
-| **Supabase**              | Option B only  | No                   | Database         | Free tier                 | Postgres + REST API              |
-| **Resend or Brevo**       | ✅ Yes          | Email                | Email            | Free tier (Resend: 3k/mo) | Sending quotes + relances        |
-| **LLM API**               | ✅ Yes          | OpenAI/Anthropic     | OpenAI/Anthropic | Paid (€10-15 budget)      | GPT-4o-mini or Claude Haiku      |
-| **Notion**                | ❌ Not required | Optional             | Optional         | Free                      | GitHub MD files can replace it   |
-| **Puppeteer / react-pdf** | Option B       | No                   | PDF generation   | Free                      | For generating quote PDFs        |
+| **GitHub**                | ✅ Oui          | Oui                  | Oui              | Gratuit                   | Le versioning est noté           |
+| **n8n**                   | ✅ Oui          | Cerveau              | Back-office      | Gratuit (auto-hébergé)    | Lancer en local avec tunnel démo |
+| **Next.js / React**       | ✅ Oui          | Frontend             | Frontend + cerveau | Gratuit                  | La couche UI                     |
+| **Vercel**                | ✅ Oui          | Déploiement          | Déploiement      | Tier gratuit              | Déploiement auto depuis GitHub   |
+| **Airtable**              | Option A seul  | BDD + tableau bord   | Non              | Tier gratuit              | Tableau de bord no-code          |
+| **Supabase**              | Option B seul  | Non                  | Base de données  | Tier gratuit              | Postgres + API REST              |
+| **Resend ou Brevo**       | ✅ Oui          | Email                | Email            | Gratuit (Resend: 3k/mois) | Envoi devis + relances           |
+| **API LLM**               | ✅ Oui          | OpenAI/Anthropic     | OpenAI/Anthropic | Payant (budget 10–15 €)   | GPT-4o-mini ou Claude Haiku      |
+| **Notion**                | ❌ Non requis   | Optionnel            | Optionnel        | Gratuit                   | Les fichiers MD GitHub suffisent |
+| **Puppeteer / react-pdf** | Option B       | Non                  | Génération PDF   | Gratuit                   | Génération des devis PDF         |
 
-### GitHub — Setup
+### GitHub — Configuration
 
 ```bash
-# One person creates the repo, others are added as collaborators
+# Une personne crée le repo, les autres sont ajoutés comme collaborateurs
 git init
 git remote add origin https://github.com/[team-org]/neotravel
 git branch -M main
 git push -u origin main
 
-# Branch strategy (simple, for 1 week)
-main          # stable, demo-ready
-dev           # integration branch  
-feat/[name]  # individual feature branches
+# Stratégie de branches (simple, pour 1 semaine)
+main          # stable, prêt pour la démo
+dev           # branche d'intégration
+feat/[nom]    # branches de fonctionnalités individuelles
 ```
 
-**Required files in repo:**
-- `README.md` — project overview, setup instructions, architecture diagram
-- `CLAUDE.md` — auto-loaded context for Claude Cowork sessions
-- `project/PROJECT_RULES.md` — rules and checklist
-- `project/PRICING_ENGINE.md` — pricing reference
+**Fichiers requis dans le repo :**
+- `README.md` — présentation du projet, instructions de config, schéma d'architecture
+- `project/PROJECT_RULES.md` — règles et checklist
+- `project/PRICING_ENGINE.md` — référence de tarification
 
-### n8n — Setup (Local with Tunnel)
+### n8n — Configuration (Local avec Tunnel)
 
 ```bash
-# Install n8n globally
+# Installer n8n globalement
 npm install n8n -g
 
-# Start n8n
+# Démarrer n8n
 n8n start
 
-# Access at http://localhost:5678
-# For demo: use ngrok or cloudflare tunnel to expose publicly
+# Accessible sur http://localhost:5678
+# Pour la démo : utiliser ngrok ou cloudflare tunnel pour exposer publiquement
 npx ngrok http 5678
 ```
 
-**n8n free self-hosted:** No limits on workflows. For production: n8n cloud ~$20/month (not needed for this project).
+**n8n gratuit auto-hébergé :** Pas de limites sur les workflows. Pour la production : n8n cloud ~20 $/mois (pas nécessaire pour ce projet).
 
-**Key nodes you'll use:**
-- Webhook (trigger from form/Next.js)
+**Nœuds clés que vous utiliserez :**
+- Webhook (déclencheur depuis le formulaire/Next.js)
 - AI Agent + OpenAI Chat Model
-- Airtable node (Option A)
-- HTTP Request node (call your own `calculer_devis()` endpoint)
-- Code node (run JS — where `calculer_devis()` lives in Option A)
-- Schedule Trigger (for relances)
+- Nœud Airtable (Option A)
+- Nœud HTTP Request (appeler votre endpoint `calculer_devis()`)
+- Nœud Code (exécuter du JS — où vit `calculer_devis()` dans l'Option A)
+- Schedule Trigger (pour les relances)
 - Send Email (Resend/SMTP)
-- If/Switch (routing: complete? urgent? >85 pax?)
+- If/Switch (routing : complet ? urgent ? >85 pax ?)
 
-### Vercel — Setup
+### Vercel — Configuration
 
 ```bash
-# Install Vercel CLI
+# Installer Vercel CLI
 npm install -g vercel
 
-# In your Next.js project
+# Dans votre projet Next.js
 vercel login
-vercel         # deploy (follows prompts)
-vercel --prod  # deploy to production URL
+vercel         # déployer (suit les prompts)
+vercel --prod  # déployer en URL de production
 ```
 
-**Free tier:** Unlimited deployments, custom domain, HTTPS. More than enough.
+**Tier gratuit :** Déploiements illimités, domaine personnalisé, HTTPS. Largement suffisant.
 
-### Airtable — Setup (Option A)
+### Airtable — Configuration (Option A)
 
-1. Create a free account at airtable.com
-2. Create a new base: "NeoTravel CRM"
-3. Create tables: Demandes, Matrices, Devis, Clients, Logs
-4. Get API key: Account → API → Generate key
-5. Get Base ID: from the URL when viewing your base
-6. In n8n: add Airtable credentials with API key
+1. Créer un compte gratuit sur airtable.com
+2. Créer une nouvelle base : "NeoTravel CRM"
+3. Créer les tables : Demandes, Matrices, Devis, Clients, Logs
+4. Obtenir la clé API : Compte → API → Générer une clé
+5. Obtenir l'ID de la base : depuis l'URL lors de la consultation de votre base
+6. Dans n8n : ajouter les identifiants Airtable avec la clé API
 
-**Pricing matrices in Airtable:** Create the Matrices table so the client can update coefficients without touching code. See [project/PRICING_ENGINE.md](project/PRICING_ENGINE.md) for the exact structure.
+**Matrices tarifaires dans Airtable :** Créer la table Matrices pour que le client puisse mettre à jour les coefficients sans toucher au code. Voir [project/PRICING_ENGINE.md](project/PRICING_ENGINE.md) pour la structure exacte.
 
-### Supabase — Setup (Option B)
+### Supabase — Configuration (Option B)
 
-1. Create account at supabase.com
-2. Create new project: "NeoTravel"
-3. Get URL and anon key from Settings → API
-4. Run SQL to create tables (see data model below)
-5. In Next.js: `npm install @supabase/supabase-js`
+1. Créer un compte sur supabase.com
+2. Créer un nouveau projet : "NeoTravel"
+3. Obtenir l'URL et la clé anon depuis Paramètres → API
+4. Exécuter le SQL pour créer les tables (voir modèle de données ci-dessous)
+5. Dans Next.js : `npm install @supabase/supabase-js`
 
 ```typescript
 import { createClient } from '@supabase/supabase-js'
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 ```
 
-### Resend — Setup (Recommended)
+### Resend — Configuration (Recommandé)
 
-1. Create account at resend.com (free: 3,000 emails/month)
-2. Add and verify a sender domain (or use the test domain for demo)
-3. Get API key from dashboard
+1. Créer un compte sur resend.com (gratuit : 3 000 emails/mois)
+2. Ajouter et vérifier un domaine expéditeur (ou utiliser le domaine de test pour la démo)
+3. Obtenir la clé API depuis le tableau de bord
 4. `npm install resend`
 
 ```typescript
 import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
-await resend.emails.send({ from: 'quotes@yourdomain.com', to: client.email, subject: 'Votre devis NeoTravel', attachments: [{ filename: 'devis.pdf', content: pdfBuffer }] });
+await resend.emails.send({
+  from: 'devis@votredomaine.com',
+  to: client.email,
+  subject: 'Votre devis NeoTravel',
+  attachments: [{ filename: 'devis.pdf', content: pdfBuffer }]
+});
 ```
 
-### Notion — Is It Required?
+### Notion — Est-ce Nécessaire ?
 
-**No.** GitHub with `.md` files is sufficient for project management and documentation. However:
-- Notion is better for living docs that non-technical team members edit
-- The L1 dossier de cadrage can be a PDF or Notion page — either works
-- If you already use Notion, keep it. If not, don't spend time setting it up.
+**Non.** GitHub avec des fichiers `.md` est suffisant pour la gestion de projet et la documentation. Cependant :
+- Notion est mieux pour des docs vivants que les membres non-techniques de l'équipe modifient
+- Le dossier de cadrage L1 peut être un PDF ou une page Notion — les deux fonctionnent
+- Si vous utilisez déjà Notion, gardez-le. Sinon, ne perdez pas de temps à le configurer.
 
-**Recommendation:** Use GitHub MD files + a simple Kanban in GitHub Projects (free). That's enough.
-
----
-
-## 8. Rules Guidelines and Checklist
-
-### Architecture Rules
-
-- [ ] Choose ONE orchestrator: n8n AI Agent OR Vercel AI SDK. Never both.
-- [ ] `calculer_devis()` is pure deterministic code. LLM never calls a math formula.
-- [ ] Pricing coefficients live in the database (Airtable/Supabase), not hardcoded.
-- [ ] LLM uses tools for every real action (DB write, price calc, PDF gen, email send).
-- [ ] The conversational UI is the main experience — not a corner chatbot widget.
-
-### Data Rules
-
-- [ ] Every lead is stored in the CRM immediately upon capture.
-- [ ] Status is updated at every pipeline transition.
-- [ ] >85 passengers → route to "Complex Case" status → human handling.
-- [ ] Each data field has a documented purpose (GDPR: purpose specification).
-- [ ] Test data does not contain real PII — use anonymized or fake data.
-
-### Follow-up Rules
-
-- [ ] Maximum 2 follow-ups per lead. After that: close the file.
-- [ ] Urgent lead: J+2 first follow-up.
-- [ ] Standard lead: J+3 first follow-up, J+7 second.
-- [ ] Follow-up trigger is idempotent — same lead cannot receive the same follow-up twice.
-- [ ] For demo: configure 2-minute delay instead of days to show relance live.
-
-### Code Quality Rules
-
-- [ ] Git repo initialized before writing first line of code.
-- [ ] Meaningful commit messages (e.g., `feat: add calculer_devis() with flat rate table`).
-- [ ] README.md includes: project description, architecture diagram, setup instructions.
-- [ ] `calculer_devis()` has unit tests with known input/output pairs.
-- [ ] Environment variables in `.env.local`, never committed to Git.
-
-### Security Rules
-
-- [ ] Client message text is separated from system instructions in prompts.
-- [ ] Tools follow least-privilege: agent can only read/write what it needs.
-- [ ] No sensitive client data logged in plain text.
-
-### Budget Rules
-
-- [ ] All tools together: <€1,000/month (client constraint).
-- [ ] LLM calls: budget €10–15 per group project (use mini/haiku models).
-- [ ] Do not use AI for price calculation (wastes tokens, introduces errors).
-- [ ] Do not test with expensive models during development.
+**Recommandation :** Utiliser les fichiers MD GitHub + un Kanban simple dans GitHub Projects (gratuit). C'est suffisant.
 
 ---
 
-## 9. Critical Rules That Can Kill the Project
+## 8. Règles, Recommandations et Checklist
 
-These are the rules that, if broken, directly cost you grade points or compromise the live demo.
+### Règles d'Architecture
 
-### ❌ RULE 1: Never Let the LLM Calculate Prices
-If an AI hallucinating "€2,400" instead of "€1,850" is caught by the jury → project credibility gone. The deterministic guardrail is explicitly graded under "Reliability & Guardrails" (10 points). **Zero tolerance.**
+- [ ] Choisir UN orchestrateur : n8n AI Agent OU Vercel AI SDK. Jamais les deux.
+- [ ] `calculer_devis()` est du code déterministe pur. Le LLM n'appelle jamais une formule mathématique.
+- [ ] Les coefficients de tarification vivent dans la base de données (Airtable/Supabase), pas codés en dur.
+- [ ] Le LLM utilise des outils pour chaque action réelle (écriture BDD, calcul de prix, génération PDF, envoi email).
+- [ ] L'UI conversationnelle est l'expérience principale — pas un widget chatbot dans un coin.
 
-### ❌ RULE 2: Do Not Duplicate Agent Logic in Both Tools
-If you start with n8n AI Agent and also wire up Vercel AI SDK to do the same thing, you'll have two agents fighting each other, broken state, and a system impossible to debug. **Pick one orchestrator and use the other for its non-brain role only.**
+### Règles de Données
 
-### ❌ RULE 3: The Demo Must Actually Work Live
-15/25 demo points require a working live path: lead in → quote out → follow-up triggered. A slideshow of screenshots will not pass. If you demo n8n: have it running and accessible via a public URL. **If the system is down during demo, you lose the most points.**
+- [ ] Chaque lead est stocké dans le CRM immédiatement à la capture.
+- [ ] Le statut est mis à jour à chaque transition du pipeline.
+- [ ] >85 passagers → orienter vers le statut "Cas Complexe" → traitement humain.
+- [ ] Chaque champ de données a une finalité documentée (RGPD : spécification de finalité).
+- [ ] Les données de test ne contiennent pas de vraie PII — utiliser des données anonymisées ou fictives.
 
-### ❌ RULE 4: Everyone Must Speak at the Presentation
-"All members must speak — those who do not speak cannot be graded on the oral block." That's 25 points at risk. Plan speaking parts for all three of you NOW.
+### Règles de Relance
 
-### ❌ RULE 5: Do Not Miss the L1 Deadline
-L1 (dossier de cadrage) is due June 24 at 23:59. No late submissions accepted. Submit whatever you have. L1 is worth 15 points and is the only deliverable due before the main build.
+- [ ] Maximum 2 relances par lead. Après : clôturer le dossier.
+- [ ] Lead urgent : première relance J+2.
+- [ ] Lead standard : première relance J+3, deuxième J+7.
+- [ ] Le déclencheur de relance est idempotent — le même lead ne peut pas recevoir la même relance deux fois.
+- [ ] Pour la démo : configurer un délai de 2 minutes au lieu de jours pour montrer la relance en live.
 
-### ❌ RULE 6: The Conversational UI Must Be Central
-"We do not want a chatbot in the corner." If you build a chatbot bubble in the bottom-right of a normal landing page, you are misunderstanding the project. The conversation IS the main interface. Inspiration: Mindtrip.ai.
+### Règles de Qualité du Code
 
-### ❌ RULE 7: Handle the >85 Passengers Edge Case
-If a request comes in for 100 passengers and your system crashes or sends a wrong quote, the jury will notice. This is a known constraint — route it to "Complex Case" and show a proper human handoff message.
+- [ ] Repo git initialisé avant d'écrire la première ligne de code.
+- [ ] Messages de commit significatifs (ex. `feat: ajouter calculer_devis() avec table forfaitaire`).
+- [ ] README.md inclut : description du projet, schéma d'architecture, instructions de configuration.
+- [ ] `calculer_devis()` dispose de tests unitaires avec des paires entrée/sortie connues.
+- [ ] Variables d'environnement dans `.env.local`, jamais commitées dans Git.
 
-### ❌ RULE 8: README Must Exist and Be Readable
-Code quality (6 points) includes the Git repo and README. A missing README is easy points thrown away.
+### Règles de Sécurité
 
----
+- [ ] Texte du message client séparé des instructions système dans les prompts.
+- [ ] Les outils suivent le moindre privilège : l'agent ne peut lire/écrire que ce dont il a besoin.
+- [ ] Aucune donnée client sensible loggée en clair.
 
-## 10. Reading Between the Lines
+### Règles de Budget
 
-These are things that were implied but not stated directly.
-
-**The evaluator was once an actual NeoTravel consultant.** Julien (the president in the brief) is not just a fictional character — the presenter confirmed deep familiarity with the exact pain points. They know when your system is realistic vs. theoretically plausible. A fake demo or a system that "works in slides" will be transparent.
-
-**The jury evaluates you as digital consultants, not just coders.** Block C (oral) asks for business reasoning: what does this save? What are the KPIs? What risk did you mitigate? You should be able to talk business ROI, not just tech architecture. Prepare: "What would happen if NeoTravel treated 20% more leads with the same team?"
-
-**HITL is graded explicitly.** Human-in-the-loop is listed under "Reliability & Guardrails" (10 pts). It's not a nice-to-have. You MUST show a scenario where the system escalates to human: either a complex case flag, a high-value quote threshold, or incomplete data.
-
-**The L3 passation (handoff doc) is 7 points that most teams overlook.** It's a technical procedure (how to run/deploy the system) + a team procedure (how a salesperson uses it). Write it last but do not forget it.
-
-**The pricing matrices must be editable without touching code.** The brief says "all these elements must be controllable to be adjusted in real time." Store them in Airtable/Supabase. The jury may ask: "How does the client update seasonal coefficients?" You must have an answer.
-
-**"A form is acceptable if justified" is real — but the emphasis is on "justified."** If you submit a plain HTML form with no explanation of why you chose it over conversational UI, you lose narrative coherence. If you say "we chose a structured form for higher data quality and combined it with an assistant for clarification on ambiguous fields," you have a defensible position.
-
-**Session history is required; cross-session memory is bonus.** Do not confuse these. Within a session, the agent must remember what the user said 5 messages ago. Between sessions — if they come back tomorrow — you don't need to remember them (but it's a bonus).
-
-**The 2-minute follow-up delay for demo is not a hack — the brief suggests it.** Reconfigure your n8n Schedule Trigger to fire every 2 minutes for the demo instead of every day. Revert before submission.
-
-**The €10–15 AI credit is per group, not per person.** That's your total budget for LLM API calls across the entire project. Use cheap models (GPT-4o-mini ≈ $0.15/1M tokens input, Claude Haiku ≈ $0.25/1M). Do not use GPT-4o or Claude Sonnet for everything.
-
-**The agile 4 points are for process, not just commits.** They want to see: backlog created early, tasks assigned, progress tracked. A GitHub Projects Kanban board with cards created on Day 1 shows this.
+- [ ] Tous les outils ensemble : <1 000 €/mois (contrainte client).
+- [ ] Appels LLM : budget 10–15 € par projet de groupe (utiliser des modèles mini/haiku).
+- [ ] Ne pas utiliser l'IA pour le calcul de prix (gaspille des tokens, introduit des erreurs).
+- [ ] Ne pas tester avec des modèles coûteux pendant le développement.
 
 ---
 
-## 11. Decisions to Agree On Before Building
+## 9. Règles Critiques Qui Peuvent Faire Échouer le Projet
 
-These are the things your team must align on. Each is a fork in the road — wrong choice, and you waste days.
+Ces règles, si enfreintes, coûtent directement des points ou compromettent la démo live.
 
-### Decision 1: Stack Option A (n8n) or Option B (Vercel AI SDK)?
+### ❌ RÈGLE 1 : Ne Jamais Laisser le LLM Calculer les Prix
+Si une IA hallucine "2 400 €" au lieu de "1 850 €" et que le jury s'en aperçoit → crédibilité du projet détruite. Le garde-fou déterministe est explicitement noté sous "Fiabilité & Garde-fous" (10 points). **Tolérance zéro.**
 
-|                | Option A — n8n AI Agent                     | Option B — Vercel AI SDK             |
-| -------------- | ------------------------------------------- | ------------------------------------ |
-| Who it's for   | Comfortable with no-code/low-code           | Comfortable in TypeScript/React      |
-| AI brain       | n8n AI Agent node                           | Vercel AI SDK in Next.js             |
-| n8n role       | Everything                                  | Back-office (relances, CRM writes)   |
-| Dashboard      | Airtable Interface (no-code)                | Custom React/Next.js page            |
-| Difficulty     | Lower                                       | Higher                               |
-| Recommendation | Works standalone, Claude is blind to n8n UI | **✅ RECOMMENDED with Claude Cowork** |
+### ❌ RÈGLE 2 : Ne Pas Dupliquer la Logique Agent dans les Deux Outils
+Si vous commencez avec n8n AI Agent et câblez aussi Vercel AI SDK pour faire la même chose, vous aurez deux agents en conflit, un état cassé, et un système impossible à déboguer. **Choisir un orchestrateur et utiliser l'autre uniquement pour son rôle non-cerveau.**
 
-**Use Option B.** The key factor: Claude Cowork works with *files*. With Option A, the AI agent lives inside n8n's browser UI — Claude can't read or edit it, so you're constantly copy-pasting between Claude and n8n. When something breaks, Claude can't see the workflow to debug it. With Option B, everything is TypeScript files in your GitHub repo — Claude reads, writes, and fixes all of it directly. You run `npm run dev`, paste an error, Claude fixes the file. The "technical difficulty" of Option B disappears when Claude is doing the coding. The only n8n you need is a minimal one for scheduled follow-ups (2 nodes, 15 minutes to set up).
+### ❌ RÈGLE 3 : La Démo Doit Vraiment Fonctionner en Live
+15/25 points de démo requièrent un parcours live fonctionnel : lead entrant → devis sortant → relance déclenchée. Un diaporama de captures d'écran ne passera pas. Si vous faites la démo avec n8n : avoir le service actif et accessible via une URL publique. **Si le système est down pendant la démo, vous perdez le maximum de points.**
 
-### Decision 2: Chatbot Interface or Form?
+### ❌ RÈGLE 4 : Tout le Monde Doit Parler à la Présentation
+"Tous les membres doivent parler — ceux qui ne parlent pas ne peuvent pas être notés sur le bloc oral." Ça représente 25 points à risque. Planifier les parties de discours pour vous trois MAINTENANT.
 
-**Use the hybrid approach** — structured form for required fields, then AI assistant for clarification. Why: a pure chatbot must extract structured data from free text ("I need a bus for 45 people to Lyon next Friday"). That extraction can fail, and when it fails the whole chain (pricing, PDF, email) breaks. A form guarantees clean data into `calculer_devis()`. The AI handles the human part after. This is the safest path to a complete working demo, where 40 of your 100 points come from.
+### ❌ RÈGLE 5 : Ne Pas Manquer l'Échéance du L1
+Le L1 (dossier de cadrage) est dû le 24 juin à 23h59. Aucun rendu tardif accepté. Soumettre ce que vous avez. Le L1 vaut 15 points et est le seul livrable dû avant le build principal.
 
-See [Section 14](#14-chatbot-vs-form) for the full breakdown.
+### ❌ RÈGLE 6 : L'UI Conversationnelle Doit Être Centrale
+"Nous ne voulons pas d'un chatbot dans un coin." Si vous construisez une bulle chatbot en bas à droite d'une page de destination normale, vous avez mal compris le projet. La conversation EST l'interface principale. Inspiration : Mindtrip.ai.
 
-### Decision 3: Who owns which component?
+### ❌ RÈGLE 7 : Gérer le Cas Limite des >85 Passagers
+Si une demande arrive pour 100 passagers et que votre système plante ou envoie un mauvais devis, le jury le remarquera. C'est une contrainte connue — orienter vers "Cas Complexe" et montrer un message de passation humaine approprié.
 
-Suggested split:
-- **Person A**: `calculer_devis()` + pricing engine + n8n tool nodes
-- **Person B**: Frontend UI (Next.js form/chat) + webhook connection
-- **Person C**: CRM schema (Airtable/Supabase) + PDF generation + email sending + dashboard
-
-### Decision 4: What's your HITL threshold?
-
-Decide on specific thresholds now, before building:
-- Quote above €X → flag for human review
-- Passenger count >85 → complex case
-- Completeness score <70% after 2 attempts → escalate
-- Client explicitly says "urgent" or "custom contract" → escalate
-
-### Decision 5: What LLM model do you use?
-
-- GPT-4o-mini (OpenAI) — very cheap, good enough for qualification and conversation
-- Claude Haiku (Anthropic) — similar price/quality
-- Do NOT use GPT-4o or Claude Sonnet for every call — burns the budget
-
-### Decision 6: Airtable or Supabase?
-
-If you pick Option A: use Airtable (it has a built-in dashboard UI, no-code).
-If you pick Option B: use Supabase (better suited for code-first stack).
-Do not mix both.
+### ❌ RÈGLE 8 : Le README Doit Exister et Être Lisible
+La qualité du code (6 points) inclut le repo Git et le README. Un README manquant, c'est des points faciles jetés à la poubelle.
 
 ---
 
-## 12. Project Phases and Task Organization
+## 10. Lire Entre les Lignes
 
-### Phase 0 — Align & Setup (June 22, Today)
-**Goal:** Everyone understands the project and tools are ready.
+Ce sont des choses qui ont été implicites mais non dites directement.
 
-- [x] Read project documents (all three team members)
-- [x] Decide: Stack A or B?
-- [x] Decide: Chatbot or form?
-- [ ] Define HITL thresholds
-- [ ] Create GitHub repo + invite collaborators
-- [ ] Create accounts: LLM API, Airtable or Supabase, Resend, Vercel
-- [ ] Set up n8n locally (run `n8n start`)
-- [ ] Initialize Next.js project: `npx create-next-app@latest neotravel`
-- [ ] Create GitHub Projects Kanban board with initial cards
-- [ ] Set up `.env.local` with all API keys
+**L'évaluateur a été un vrai consultant NeoTravel.** Julien (le président dans le brief) n'est pas qu'un personnage fictif — le présentateur a confirmé une familiarité profonde avec les points de douleur exacts. Ils savent quand votre système est réaliste ou théoriquement plausible. Une fausse démo ou un système qui "fonctionne en slides" sera transparent.
 
-### Phase 1 — Framing & L1 (June 22–24)
-**Goal:** L1 dossier submitted by June 24 at 23:59.
+**Le jury vous évalue comme consultants numériques, pas seulement comme développeurs.** Le bloc C (oral) demande un raisonnement métier : qu'est-ce que ça économise ? Quels sont les KPIs ? Quel risque avez-vous atténué ? Vous devez pouvoir parler ROI métier, pas seulement architecture technique. Préparer : "Que se passerait-il si NeoTravel traitait 20% de leads en plus avec la même équipe ?"
 
-- [ ] Write L1: business problem analysis
-- [ ] Write L1: technical framing (stack choice + justification)
-- [ ] Write L1: architecture diagram
-- [ ] Write L1: 2–3 usage scenarios (happy path, edge case, HITL)
-- [ ] Write L1: data model (tables + fields)
-- [ ] Review + submit L1 before 23:59 on June 24
+**Le HITL est explicitement noté.** Human-in-the-loop est listé sous "Fiabilité & Garde-fous" (10 pts). Ce n'est pas un nice-to-have. Vous DEVEZ montrer un scénario où le système escalade à un humain : soit un flag de cas complexe, un seuil de devis haute valeur, ou des données incomplètes.
 
-**L1 is 15 points. Do not skip this.**
+**Le L3 passation (doc de transfert) vaut 7 points que la plupart des équipes ignorent.** C'est une procédure technique (comment lancer/déployer le système) + une procédure équipe (comment un commercial l'utilise). L'écrire en dernier mais ne pas l'oublier.
 
-### Phase 2 — Pricing Engine (June 24–25)
-**Goal:** `calculer_devis()` works perfectly before any AI is connected.
+**Les matrices de tarification doivent être modifiables sans toucher au code.** Le brief dit "tous ces éléments doivent être contrôlables pour être ajustés en temps réel." Les stocker dans Airtable/Supabase. Le jury peut demander : "Comment le client met-il à jour les coefficients saisonniers ?" Vous devez avoir une réponse.
 
-- [ ] Implement `calculer_devis()` in pure TypeScript/JavaScript
-- [ ] Implement flat rate table (up to 180km)
-- [ ] Implement formula for >180km: `(km × 2) × €2.50`
-- [ ] Implement round trip: simple transfer × 2
-- [ ] Implement all coefficients: seasonality, urgency, capacity, margin
-- [ ] Write unit tests: at least 5 known input/output pairs
-- [ ] Store pricing matrices in Airtable/Supabase (editable without code)
-- [ ] Test isolated: call function directly, verify results match pricing PDF
+**"Un formulaire est acceptable si justifié" est réel — mais l'accent est sur "justifié."** Si vous soumettez un formulaire HTML ordinaire sans expliquer pourquoi vous l'avez choisi plutôt qu'une UI conversationnelle, vous perdez en cohérence narrative. Si vous dites "nous avons choisi un formulaire structuré pour une meilleure qualité de données et l'avons combiné avec un assistant pour la clarification des champs ambigus," vous avez une position défendable.
 
-### Phase 3 — Data Model & CRM (June 25–26)
-**Goal:** Database ready, forms working, data flowing.
+**L'historique de session est requis ; la mémoire inter-sessions est un bonus.** Ne pas confondre les deux. Dans une session, l'agent doit se souvenir de ce que l'utilisateur a dit 5 messages avant. Entre sessions — s'ils reviennent demain — vous n'avez pas besoin de les reconnaître (mais c'est un bonus).
 
-- [ ] Create Demandes table with all required fields
-- [ ] Create Matrices table (coefficients, editable)
-- [ ] Create Devis table (quote records)
-- [ ] Create Clients table
-- [ ] Create Logs table (for observability)
-- [ ] Test CRUD operations manually
+**Le délai de 2 minutes pour les relances en démo n'est pas un hack — le brief le suggère.** Reconfigurer votre Schedule Trigger n8n pour se déclencher toutes les 2 minutes pour la démo au lieu de tous les jours. Remettre à la normale avant la soumission.
 
-### Phase 4 — Agent & Orchestration (June 26–27)
-**Goal:** AI agent qualifies leads and calls tools.
+**Le crédit IA de 10–15 € est par groupe, pas par personne.** C'est votre budget total pour les appels API LLM sur tout le projet. Utiliser des modèles bon marché (GPT-4o-mini ≈ 0,15 $/1M tokens en entrée, Claude Haiku ≈ 0,25 $/1M). Ne pas utiliser GPT-4o ou Claude Sonnet pour tout.
 
-- [ ] Write system prompt (role, rules, guardrails, tone)
-- [ ] Connect LLM to n8n AI Agent (or Vercel AI SDK)
-- [ ] Implement tool: `calculer_devis()` call
-- [ ] Implement tool: CRM write (save lead to Airtable/Supabase)
-- [ ] Implement tool: status update
-- [ ] Implement tool: HITL escalation
-- [ ] Test: full happy path from lead capture to quote generation
-- [ ] Test: edge case — >85 passengers → complex case
-- [ ] Test: incomplete data → agent asks clarifying question
-
-### Phase 5 — PDF & Email (June 27–28)
-**Goal:** Quote PDF generated and sent by email.
-
-- [ ] Build PDF quote template (HTML or react-pdf)
-- [ ] Implement PDF generation from `calculer_devis()` output
-- [ ] Connect Resend/Brevo for email sending
-- [ ] Send test email with PDF attachment
-- [ ] Test full path: lead → quote → PDF → email sent
-
-### Phase 6 — Follow-ups & Dashboard (June 28–29)
-**Goal:** Relances work, pipeline is visible.
-
-- [ ] Build n8n Schedule Trigger workflow for relances
-- [ ] Implement urgency-based timing (J+2 vs J+3/J+7)
-- [ ] Implement idempotency check (don't send relance twice)
-- [ ] Implement max 2 follow-up cap → auto-close
-- [ ] Build or configure dashboard (Airtable Interface or custom Next.js page)
-- [ ] Configure demo mode: 2-minute delay for relances
-
-### Phase 7 — L2, L3 & Hardening (June 29)
-**Goal:** Deliverables submitted by June 29 at 23:59.
-
-- [ ] Write L3: technical procedure (how to deploy and run the system)
-- [ ] Write L3: team procedure (how a salesperson uses the dashboard)
-- [ ] Finalize README
-- [ ] Run through all 7 demo scenarios
-- [ ] Test edge cases: >85 passengers, urgent request, missing data
-- [ ] Test idempotency: trigger follow-up twice, confirm only one email sent
-- [ ] Submit L2 (prototype) + L3 (handoff doc)
-
-### Phase 8 — Slides & Oral Prep (June 30)
-**Goal:** Slides submitted, everyone knows what they say.
-
-- [ ] Build presentation deck (slides due June 30 at 23:59)
-- [ ] Include: problem, solution, demo screenshots, architecture, KPIs/business value
-- [ ] Assign speaking sections to each team member (all must speak)
-- [ ] Rehearse the live demo at least twice
-- [ ] Prepare answers for likely jury questions (see below)
-
-### Phase 9 — Presentation (July 1)
-**Goal:** Strong demo + confident oral defense.
-
-**Likely jury questions to prepare:**
-- "Why did you choose n8n over Vercel AI SDK / the reverse?"
-- "How does the client update pricing coefficients?"
-- "What happens if someone enters 200 passengers?"
-- "How do you prevent sending the same follow-up twice?"
-- "What is the business impact? What KPIs would you track?"
-- "How does your system preserve the human relationship?"
-- "What would you build next if you had 3 more weeks?"
+**Les 4 points agile concernent le processus, pas seulement les commits.** Ils veulent voir : backlog créé tôt, tâches assignées, progression suivie. Un tableau Kanban GitHub Projects avec des cartes créées dès le Jour 1 le démontre.
 
 ---
 
-## 13. Workspace and Atelier Setup
+## 11. Décisions à Prendre Avant de Construire
 
-### Step-by-step: Day 1 Setup
+Ce sont les choses sur lesquelles votre équipe doit s'aligner. Chacune est un carrefour — mauvais choix, et vous perdez des jours.
 
-**1. Create the GitHub repo**
+### Décision 1 : Stack Option A (n8n) ou Option B (Vercel AI SDK) ?
+
+|                | Option A — n8n AI Agent                      | Option B — Vercel AI SDK             |
+| -------------- | -------------------------------------------- | ------------------------------------ |
+| Pour qui       | À l'aise avec le no-code/low-code            | À l'aise en TypeScript/React         |
+| Cerveau IA     | Nœud n8n AI Agent                            | Vercel AI SDK dans Next.js           |
+| Rôle de n8n    | Tout                                         | Back-office (relances, écritures CRM)|
+| Tableau bord   | Airtable Interface (no-code)                 | Page React/Next.js personnalisée     |
+| Difficulté     | Plus faible                                  | Plus élevée                          |
+| Recommandation | Fonctionne seul, Claude est aveugle à l'UI n8n | **✅ RECOMMANDÉ avec Claude Cowork** |
+
+**Note :** La stack est verrouillée sur l'Option A (n8n + Airtable). Voir CLAUDE.md pour les décisions verrouillées.
+
+### Décision 2 : Interface Chatbot ou Formulaire ?
+
+**Utiliser l'approche hybride** — formulaire structuré pour les champs requis, puis assistant IA pour la clarification. Pourquoi : un pur chatbot doit extraire des données structurées du texte libre ("J'ai besoin d'un bus pour 45 personnes à Lyon vendredi prochain"). Cette extraction peut échouer, et quand elle échoue, toute la chaîne (tarification, PDF, email) casse. Un formulaire garantit des données propres dans `calculer_devis()`. L'IA gère la partie humaine ensuite.
+
+Voir [Section 14](#14-chatbot-vs-formulaire) pour l'analyse complète.
+
+### Décision 3 : Qui Possède Quel Composant ?
+
+Répartition suggérée :
+- **Gendell** : backend/n8n — workflows, `calculer_devis()`, outils, intégrations
+- **Inde** : frontend/docs — formulaire Next.js, UI, L1/L3
+- **Yahia** : slides/tests — présentation, scénarios de test
+
+### Décision 4 : Quel Est Votre Seuil HITL ?
+
+Décider des seuils spécifiques maintenant, avant de construire :
+- Nombre de passagers >85 → cas complexe
+- Score de complétude <70% après 1 tentative de clarification → escalader
+- Le client mentionne explicitement "urgent" ou "contrat personnalisé" → escalader
+
+### Décision 5 : Quel Modèle LLM Utiliser ?
+
+- Gemini 2.0 Flash (Google) — tier gratuit, 1 500 req/jour, bien supporté par n8n
+- NE PAS utiliser GPT-4o ou Claude Sonnet pour chaque appel — brûle le budget
+
+### Décision 6 : Airtable ou Supabase ?
+
+Stack verrouillée sur Airtable (Option A). L'Airtable Interface fournit le tableau de bord no-code.
+
+---
+
+## 12. Phases du Projet et Organisation des Tâches
+
+### Phase 0 — Alignement & Configuration (22 juin, aujourd'hui)
+**Objectif :** Tout le monde comprend le projet et les outils sont prêts.
+
+- [x] Lire les documents du projet (les trois membres)
+- [x] Décider : Stack A ou B ?
+- [x] Décider : Chatbot ou formulaire ?
+- [ ] Définir les seuils HITL
+- [ ] Créer le repo GitHub + inviter les collaborateurs
+- [ ] Créer les comptes : API LLM, Airtable, Resend, Vercel
+- [ ] Configurer n8n en local (lancer `n8n start`)
+- [ ] Initialiser le projet Next.js : `npx create-next-app@latest neotravel`
+- [ ] Créer le tableau Kanban GitHub Projects avec les cartes initiales
+- [ ] Configurer `.env.local` avec toutes les clés API
+
+### Phase 1 — Cadrage & L1 (22–24 juin)
+**Objectif :** Dossier de cadrage L1 soumis avant le 24 juin à 23h59.
+
+- [ ] Rédiger le L1 : analyse du problème métier
+- [ ] Rédiger le L1 : cadrage technique (choix de stack + justification)
+- [ ] Rédiger le L1 : schéma d'architecture
+- [ ] Rédiger le L1 : 2–3 scénarios d'utilisation (parcours nominal, cas limite, HITL)
+- [ ] Rédiger le L1 : modèle de données (tables + champs)
+- [ ] Réviser + soumettre le L1 avant le 23h59 du 24 juin
+
+**Le L1 vaut 15 points. Ne pas sauter cette étape.**
+
+### Phase 2 — Moteur de Tarification (24–25 juin)
+**Objectif :** `calculer_devis()` fonctionne parfaitement avant de connecter quoi que ce soit à l'IA.
+
+- [ ] Implémenter `calculer_devis()` en TypeScript/JavaScript pur
+- [ ] Implémenter la table de forfaits (jusqu'à 180 km)
+- [ ] Implémenter la formule pour >180 km : `(km × 2) × 2,50 €`
+- [ ] Implémenter l'aller-retour : transfert simple × 2
+- [ ] Implémenter tous les coefficients : saisonnalité, urgence, capacité, marge
+- [ ] Écrire des tests unitaires : au moins 5 paires entrée/sortie connues
+- [ ] Stocker les matrices tarifaires dans Airtable (modifiables sans code)
+- [ ] Tester isolément : appeler la fonction directement, vérifier que les résultats correspondent au PDF de tarification
+
+### Phase 3 — Modèle de Données & CRM (25–26 juin)
+**Objectif :** Base de données prête, formulaires fonctionnels, données qui circulent.
+
+- [ ] Créer la table Demandes avec tous les champs requis
+- [ ] Créer la table Matrices (coefficients, modifiables)
+- [ ] Créer la table Devis (enregistrements de devis)
+- [ ] Créer la table Clients
+- [ ] Créer la table Logs (pour l'observabilité)
+- [ ] Tester les opérations CRUD manuellement
+
+### Phase 4 — Agent & Orchestration (26–27 juin)
+**Objectif :** L'agent IA qualifie les leads et appelle les outils.
+
+- [ ] Rédiger le prompt système (rôle, règles, garde-fous, ton)
+- [ ] Connecter Gemini 2.0 Flash à l'AI Agent n8n
+- [ ] Implémenter l'outil : appel à `calculer_devis()`
+- [ ] Implémenter l'outil : écriture CRM (sauvegarder le lead dans Airtable)
+- [ ] Implémenter l'outil : mise à jour du statut
+- [ ] Implémenter l'outil : escalade HITL
+- [ ] Tester : parcours nominal complet de la capture du lead à la génération du devis
+- [ ] Tester : cas limite — >85 passagers → cas complexe
+- [ ] Tester : données incomplètes → email de clarification
+
+### Phase 5 — PDF & Email (27–28 juin)
+**Objectif :** Devis PDF généré et envoyé par email.
+
+- [ ] Construire le template PDF du devis
+- [ ] Implémenter la génération PDF à partir de la sortie de `calculer_devis()`
+- [ ] Connecter Resend pour l'envoi d'emails
+- [ ] Envoyer un email de test avec pièce jointe PDF
+- [ ] Tester le parcours complet : lead → devis → PDF → email envoyé
+
+### Phase 6 — Relances & Tableau de Bord (28–29 juin)
+**Objectif :** Les relances fonctionnent, le pipeline est visible.
+
+- [ ] Construire le Workflow 2 n8n (Schedule Trigger pour les relances)
+- [ ] Implémenter le timing basé sur l'urgence (J+2 vs J+3/J+7)
+- [ ] Implémenter la vérification d'idempotence (ne pas envoyer la relance deux fois)
+- [ ] Implémenter le plafond de 2 relances maximum → clôture auto
+- [ ] Configurer l'Airtable Interface comme tableau de bord
+- [ ] Configurer le mode démo : délai de 2 minutes pour les relances
+
+### Phase 7 — L2, L3 & Stabilisation (29 juin)
+**Objectif :** Livrables soumis avant le 29 juin à 23h59.
+
+- [ ] Rédiger le L3 : procédure technique (comment déployer et lancer le système)
+- [ ] Rédiger le L3 : procédure équipe (comment un commercial utilise le tableau de bord)
+- [ ] Finaliser le README
+- [ ] Parcourir les 7 scénarios de démo
+- [ ] Tester les cas limites : >85 passagers, demande urgente, données manquantes
+- [ ] Tester l'idempotence : déclencher une relance deux fois, confirmer qu'un seul email est envoyé
+- [ ] Soumettre L2 (prototype) + L3 (doc de passation)
+
+### Phase 8 — Slides & Préparation Orale (30 juin)
+**Objectif :** Slides soumis, tout le monde sait ce qu'il dit.
+
+- [ ] Construire le jeu de diapositives (slides dus le 30 juin à 23h59)
+- [ ] Inclure : problème, solution, captures d'écran démo, architecture, KPIs/valeur métier
+- [ ] Attribuer les sections de discours à chaque membre (tous doivent parler)
+- [ ] Répéter la démo live au moins deux fois
+- [ ] Préparer les réponses aux questions probables du jury (voir ci-dessous)
+
+### Phase 9 — Présentation (1er juillet)
+**Objectif :** Démo convaincante + soutenance orale confiante.
+
+**Questions probables du jury à préparer :**
+- "Pourquoi avez-vous choisi n8n ?"
+- "Comment le client met-il à jour les coefficients de tarification ?"
+- "Que se passe-t-il si quelqu'un saisit 200 passagers ?"
+- "Comment empêchez-vous l'envoi de la même relance deux fois ?"
+- "Quel est l'impact métier ? Quels KPIs suivriez-vous ?"
+- "Comment votre système préserve-t-il la relation humaine ?"
+- "Que construiriez-vous ensuite si vous aviez 3 semaines de plus ?"
+
+---
+
+## 13. Configuration de l'Espace de Travail
+
+### Étape par étape : Configuration du Jour 1
+
+**1. Créer le repo GitHub**
 ```bash
-# Person A creates the repo on github.com, sets it to private
-# Invites Person B and Person C as collaborators
-# Everyone clones:
-git clone https://github.com/[team]/neotravel.git
+# La Personne A crée le repo sur github.com, le met en privé
+# Invite la Personne B et la Personne C comme collaborateurs
+# Tout le monde clone :
+git clone https://github.com/boolshyt/neotravel.git
 cd neotravel
 ```
 
-**2. Initialize the Next.js project**
+**2. Initialiser le projet Next.js**
 ```bash
 npx create-next-app@latest . --typescript --tailwind --app
 npm install
-npm run dev  # verify http://localhost:3000 works
+npm run dev  # vérifier que http://localhost:3000 fonctionne
 ```
 
-**3. Create the GitHub Projects Kanban**
-- Go to github.com/[team]/neotravel → Projects → New Project
-- Use "Board" layout
-- Columns: Backlog → In Progress → Review → Done
-- Add cards for every Phase task above
+**3. Créer le Kanban GitHub Projects**
+- Aller sur github.com/boolshyt/neotravel → Projects → New Project
+- Utiliser la mise en page "Board"
+- Colonnes : Backlog → En cours → Révision → Terminé
+- Ajouter des cartes pour chaque tâche de phase ci-dessus
 
-**4. Set up your LLM API accounts**
-- OpenAI: platform.openai.com → API keys → Create key (add €15 credit)
-- OR Anthropic: console.anthropic.com → API keys
+**4. Configurer le compte API LLM**
+- Google AI Studio : aistudio.google.com → Get API key (Gemini 2.0 Flash, gratuit)
 
-**5. Set up n8n locally**
+**5. Configurer n8n en local**
 ```bash
 npm install -g n8n
 n8n start
-# Opens at http://localhost:5678
-# Create a free account when prompted
+# S'ouvre sur http://localhost:5678
+# Créer un compte gratuit à l'invite
 ```
 
-**6. Set up Airtable (Option A) or Supabase (Option B)**
-- Airtable: airtable.com → Create new base → "NeoTravel CRM"
-- Supabase: supabase.com → New project → "NeoTravel"
+**6. Configurer Airtable**
+- airtable.com → Créer une nouvelle base → "NeoTravel CRM"
+- Créer les tables : Demandes, Matrices, Devis, Clients, Logs
 
-**7. Set up Resend**
-- resend.com → Create account → API Keys → Create key
-- For demo: use test domain (no DNS setup needed for testing)
+**7. Configurer Resend**
+- resend.com → Créer un compte → Clés API → Créer une clé
+- Pour la démo : utiliser le domaine de test (pas de configuration DNS nécessaire pour les tests)
 
-**8. Set up Vercel**
+**8. Configurer Vercel**
 ```bash
 npm install -g vercel
-vercel login  # authenticate with GitHub
-# When ready to deploy:
-vercel  # follows prompts, connects to your GitHub repo
+vercel login  # s'authentifier avec GitHub
+# Quand prêt à déployer :
+vercel  # suit les prompts, se connecte à votre repo GitHub
 ```
 
-**9. Create `.env.local` at project root**
+**9. Créer `.env.local` à la racine du projet**
 ```bash
-# Never commit this file to Git
-OPENAI_API_KEY=sk-...
-# OR
-ANTHROPIC_API_KEY=sk-ant-...
-
+# Ne jamais commiter ce fichier dans Git
+GEMINI_API_KEY=...
 RESEND_API_KEY=re_...
-
-# Option A
 AIRTABLE_API_KEY=...
 AIRTABLE_BASE_ID=app...
-
-# Option B
-NEXT_PUBLIC_SUPABASE_URL=https://[ref].supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-
-# n8n webhook URL (update when tunneled)
 N8N_WEBHOOK_URL=http://localhost:5678/webhook/neotravel
 ```
 
-**10. Create `.gitignore`** (create-next-app does this, just verify)
+**10. Créer `.gitignore`** (create-next-app le fait, vérifier simplement)
 ```
 .env.local
 .env
@@ -783,131 +771,123 @@ node_modules/
 .next/
 ```
 
-### What Needs to be Agreed Before the First Commit
+### Ce Qui Doit Être Convenu Avant le Premier Commit
 
-1. ✅ Stack A or B
-2. ✅ Chatbot or form  
-3. ✅ HITL thresholds
-4. ✅ Task ownership per person
-5. ✅ Branch naming convention
-6. ✅ Commit message convention
-
----
-
-## 14. Chatbot vs Form
-
-### The Short Answer
-
-**Both are acceptable. A form alone is valid if justified. A hybrid is also fine.**
-
-From the FAQ document (verbatim): *"Oui, si vous le justifiez. Un formulaire peut être plus fiable pour collecter des données structurées. Un parcours hybride (formulaire pour les informations obligatoires + assistant pour clarifier) est aussi recevable."*
-
-### The Long Answer
-
-The **chatbot** approach:
-- Collects data conversationally — feels like a travel advisor
-- Aligns with the Mindtrip.ai inspiration the teacher cited
-- More impressive technically
-- Harder to implement: must manage state, extract structured data from natural language
-- Risk: if the conversation flow is buggy, the whole system breaks during demo
-
-The **form** approach:
-- More reliable for structured data collection
-- Easier to build and less likely to fail during demo
-- Less impressive, but demonstrates the same automation chain
-- Must be justified in L1 dossier
-
-The **hybrid** approach (recommended if unsure):
-- Form for required structured fields (dates, passengers, route)
-- Assistant picks up after form submission for: clarification, missing info, tone
-- Avoids the risk of an LLM failing to extract `nb_passagers` from a free-text input
-- Shows both technical capabilities
-
-### What Matters More Than The Interface
-
-The interface is the entry point. What's graded is the full chain that follows:
-- Does data get into the CRM? ✓
-- Is the quote calculated deterministically? ✓
-- Does the PDF get generated? ✓
-- Is the email sent? ✓
-- Are follow-ups triggered on schedule? ✓
-- Does HITL work? ✓
-
-A beautiful chatbot that breaks on step 3 scores lower than a plain form that completes the full chain.
-
-### Recommendation
-
-If you have the time and skill: **conversational UI as the main interface** (what the teacher envisions).
-
-If you're under time pressure: **hybrid** — structured form for data capture, then AI assistant takes over for qualification, clarification, and personalization.
-
-Either way, **write a 2–3 sentence justification in L1** explaining why you chose your approach.
+1. ✅ Stack A (n8n + Airtable)
+2. ✅ Formulaire multi-étapes conversationnel (style Typeform)
+3. ✅ Seuils HITL (>85 pax, complétude <70%)
+4. ✅ Propriété des tâches par personne
+5. ✅ Convention des messages de commit
 
 ---
 
-## 15. Grading Breakdown
+## 14. Chatbot vs Formulaire
 
-### Block A — Deliverables (50 points)
+### La Réponse Courte
 
-**L1 — Dossier de cadrage (15 points)** · Due June 24
-- Problem analysis + prioritization: **7 pts**
-  - Business framing, identified friction, KPIs
-- Technical framing + scenarios: **8 pts**
-  - Architecture, stack justification, 2-3 usage scenarios, data model
+**Les deux sont acceptables. Un formulaire seul est valide si justifié. Un hybride est aussi acceptable.**
 
-**L2 — Prototype + Artifacts (28 points)** · Due June 29
-- Functional prototype: **8 pts**
-  - SOCLE (required): Full chain working + n8n accessible from outside
-  - BONUS: Fully hosted (Vercel + n8n cloud)
-- Reliability + guardrails: **10 pts**
-  - Deterministic price calculation
-  - Test cases for `calculer_devis()`
-  - HITL implemented
-  - GDPR basic compliance
-  - Prompt injection protection
-  - BONUS: Observability/tracing
-- Code quality: **6 pts**
-  - Git repo with history
-  - README (setup + architecture)
+Depuis le document FAQ (verbatim) : *"Oui, si vous le justifiez. Un formulaire peut être plus fiable pour collecter des données structurées. Un parcours hybride (formulaire pour les informations obligatoires + assistant pour clarifier) est aussi recevable."*
+
+### La Réponse Longue
+
+L'approche **chatbot** :
+- Collecte les données de façon conversationnelle — ressemble à un conseiller voyage
+- S'aligne avec l'inspiration Mindtrip.ai citée par le professeur
+- Plus impressionnant techniquement
+- Plus difficile à implémenter : doit gérer l'état, extraire des données structurées du langage naturel
+- Risque : si le flux de conversation est buggé, tout le système casse pendant la démo
+
+L'approche **formulaire** :
+- Plus fiable pour la collecte de données structurées
+- Plus simple à construire et moins susceptible de tomber en panne pendant la démo
+- Moins impressionnant, mais démontre la même chaîne d'automatisation
+- Doit être justifié dans le dossier de cadrage L1
+
+L'approche **hybride — formulaire multi-étapes conversationnel (style Typeform)** (choisie) :
+- Une question par écran, copie friendly, progression visuelle
+- Sortie structurée garantie pour `calculer_devis()`
+- L'IA intervient pour la qualification, la clarification, et la personnalisation du devis
+- Évite le risque d'un LLM échouant à extraire `nb_passagers` d'une saisie en texte libre
+- Montre les deux capacités techniques
+
+### Ce Qui Compte Plus Que l'Interface
+
+L'interface est le point d'entrée. Ce qui est noté c'est la chaîne complète qui suit :
+- Les données arrivent-elles dans le CRM ? ✓
+- Le devis est-il calculé de façon déterministe ? ✓
+- Le PDF est-il généré ? ✓
+- L'email est-il envoyé ? ✓
+- Les relances sont-elles déclenchées selon le calendrier ? ✓
+- Le HITL fonctionne-t-il ? ✓
+
+Un beau chatbot qui casse à l'étape 3 obtient une note inférieure à un formulaire ordinaire qui complète la chaîne entière.
+
+---
+
+## 15. Répartition des Notes
+
+### Bloc A — Livrables (50 points)
+
+**L1 — Dossier de cadrage (15 points)** · Rendu le 24 juin
+- Analyse du problème + priorisation : **7 pts**
+  - Cadrage métier, frictions identifiées, KPIs
+- Cadrage technique + scénarios : **8 pts**
+  - Architecture, justification de la stack, 2–3 scénarios d'utilisation, modèle de données
+
+**L2 — Prototype + Artefacts (28 points)** · Rendu le 29 juin
+- Prototype fonctionnel : **8 pts**
+  - SOCLE (requis) : Chaîne complète fonctionnelle + n8n accessible de l'extérieur
+  - BONUS : Entièrement hébergé (Vercel + n8n cloud)
+- Fiabilité + garde-fous : **10 pts**
+  - Calcul de prix déterministe
+  - Cas de test pour `calculer_devis()`
+  - HITL implémenté
+  - Conformité RGPD de base
+  - Protection contre l'injection de prompt
+  - BONUS : Observabilité/traçage
+- Qualité du code : **6 pts**
+  - Repo Git avec historique
+  - README (config + architecture)
   - Tests
-- Agile approach: **4 pts**
-  - Backlog created early
-  - Tasks tracked
-  - Commits show progressive work
+- Approche agile : **4 pts**
+  - Backlog créé tôt
+  - Tâches suivies
+  - Commits montrant une progression progressive
 
-**L3 — Handoff Documentation (7 points)** · Due June 29
-- Technical procedure: how to deploy and run the system
-- Team procedure: how a salesperson uses the dashboard and tools
+**L3 — Documentation de Passation (7 points)** · Rendu le 29 juin
+- Procédure technique : comment déployer et lancer le système
+- Procédure équipe : comment un commercial utilise le tableau de bord et les outils
 
-### Block B — Demo (25 points)
+### Bloc B — Démo (25 points)
 
-- Full live path (lead → quote → email → follow-up): **15 pts**
-- Robustness on unscripted/edge cases: **6 pts**
-- Tool mastery (you know what you built): **4 pts**
+- Parcours live complet (lead → devis → email → relance) : **15 pts**
+- Robustesse sur les cas non-scriptés/limites : **6 pts**
+- Maîtrise des outils (vous savez ce que vous avez construit) : **4 pts**
 
-### Block C — Oral (25 points)
+### Bloc C — Oral (25 points)
 
-- Pitch + clarity: **7 pts**
-- Technical defense: **8 pts**
-- Jury Q&A: **5 pts**
-- Posture + professionalism: **5 pts**
+- Pitch + clarté : **7 pts**
+- Soutenance technique : **8 pts**
+- Q&A du jury : **5 pts**
+- Posture + professionnalisme : **5 pts**
 
-**Important:** Those who don't speak cannot be graded on Block C (25 pts).
-
----
-
-## 16. Deadlines
-
-| Deliverable | Deadline | Points at Risk |
-|------------|----------|----------------|
-| **L1 — Dossier de cadrage** | **June 24, 2026 at 23:59** | 15 pts |
-| **L2 — Prototype + artifacts** | **June 29, 2026 at 23:59** | 28 pts |
-| **L3 — Handoff documentation** | **June 29, 2026 at 23:59** | 7 pts |
-| **Presentation slides** | **June 30, 2026 at 23:59** | — |
-| **Live presentation** | **July 1, 2026** | 25 + 25 pts |
-
-**No late submissions accepted.**
+**Important :** Ceux qui ne parlent pas ne peuvent pas être notés sur le Bloc C (25 pts).
 
 ---
 
-*Last updated: June 22, 2026 | Generated from all 12 project source documents*
+## 16. Échéances
+
+| Livrable | Échéance | Points en Jeu |
+|----------|----------|---------------|
+| **L1 — Dossier de cadrage** | **24 juin 2026 à 23h59** | 15 pts |
+| **L2 — Prototype + artefacts** | **29 juin 2026 à 23h59** | 28 pts |
+| **L3 — Documentation de passation** | **29 juin 2026 à 23h59** | 7 pts |
+| **Diapositives de présentation** | **30 juin 2026 à 23h59** | — |
+| **Présentation live** | **1er juillet 2026** | 25 + 25 pts |
+
+**Aucun rendu tardif accepté.**
+
+---
+
+*Dernière mise à jour : 22 juin 2026 | Généré à partir des 12 documents sources du projet*

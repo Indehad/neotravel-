@@ -1,147 +1,147 @@
-# NeoTravel — Project Rules & Checklist
+# NeoTravel — Règles & Checklist du Projet
 
-> Reference before every coding session and every architectural decision.
-> These rules are derived from the full project brief, FAQ, technical booklet, and kickoff transcript.
-
----
-
-## 🔴 Non-Negotiable Rules (Breaking These Fails the Project)
-
-### Rule 1: The LLM Never Calculates Prices
-- `calculer_devis()` is pure deterministic code
-- The agent only calls this function as a tool and passes the result
-- The agent NEVER estimates, approximates, or calculates prices in natural language
-- This is explicitly graded under "Reliability & Guardrails" (10 pts)
-
-**How to verify:** If you remove the LLM and call `calculer_devis()` directly, the output must be identical. If the price changes based on how the client phrases their request, you have a bug.
-
-### Rule 2: Pick ONE Orchestrator
-- Either n8n AI Agent (brain) OR Vercel AI SDK (brain)
-- Not both
-- n8n can still be used in Option B for scheduling and CRM writes — but it is not the AI brain in that case
-- Dual-agent setups create broken state and are impossible to debug in a week
-
-### Rule 3: The Demo Must Be Live
-- The jury expects a real, functioning system during the demo
-- Screenshots, Loom recordings, or "this is what it would look like" are not acceptable
-- n8n must be accessible from the internet during demo (ngrok/cloudflare tunnel or n8n cloud)
-- Test the full demo path at least twice the day before
-
-### Rule 4: All Three Team Members Must Speak
-- Block C oral (25 pts) requires all members to present
-- Plan speaking assignments NOW
-- Those who don't speak cannot be graded on the oral block
-
-### Rule 5: No Late Submissions
-- The system does not accept late work
-- Submit L1 before June 24 at 23:59 even if incomplete
-- Submit L2+L3 before June 29 at 23:59 even if incomplete
-
-### Rule 6: Conversational UI Is the Central Interface
-- The chat/form IS the main page — not a widget in the corner
-- Inspiration: Mindtrip.ai (look it up)
-- Standard landing page + floating chatbot bubble = wrong interpretation of the brief
-
-### Rule 7: Handle >85 Passengers
-- Passenger count >85 must route to "Complex Case" status
-- Show a message explaining the lead will be handled by a salesperson
-- Do not generate a quote for groups >85
-
-### Rule 8: Pricing Coefficients Must Be Editable in the Database
-- Seasonality, urgency, capacity coefficients live in the Matrices table
-- Client must be able to update them without touching code
-- This is explicitly stated in the pricing rules document
+> À consulter avant chaque session de code et chaque décision architecturale.
+> Ces règles sont dérivées du brief complet du projet, de la FAQ, du livret technique et du transcript de lancement.
 
 ---
 
-## 🟡 Architecture Checklist
+## 🔴 Règles Non Négociables (Les enfreindre fait échouer le projet)
 
-### Agent Design
-- [ ] System prompt defines: role, guardrails (no price calc), tone, escalation conditions
-- [ ] Temperature is LOW (0.0–0.2) for data extraction steps
-- [ ] Tool list is defined and minimal (least privilege)
-- [ ] Agent extracts structured data (JSON/Zod schema) BEFORE calling any tool
-- [ ] Session memory is maintained within a conversation (messages array passed to LLM)
-- [ ] HITL triggers: >85 pax, completeness < 70% (one clarification email then human takes over), special conditions mentioned by client
+### Règle 1 : Le LLM Ne Calcule Jamais les Prix
+- `calculer_devis()` est du code déterministe pur
+- L'agent appelle uniquement cette fonction comme outil et transmet le résultat
+- L'agent N'ESTIME, N'APPROXIME, NI NE CALCULE JAMAIS les prix en langage naturel
+- Explicitement noté sous "Fiabilité & Garde-fous" (10 pts)
 
-### Data Model
-- [ ] Demandes table: all required fields (see list in CLAUDE.md)
-- [ ] Matrices table: seasonality, urgency, capacity, margin, options — all editable
-- [ ] Devis table: prix_ht, tva, prix_ttc, lignes, status, pdf_url, sent_date, relance_count
-- [ ] Clients table: identity + history
-- [ ] Status is updated at every pipeline transition
+**Comment vérifier :** Si vous retirez le LLM et appelez `calculer_devis()` directement, le résultat doit être identique. Si le prix change selon la formulation du client, c'est un bug.
 
-### Pricing Engine
-- [ ] `calculer_devis()` is implemented in pure TS/JS with zero LLM dependency
-- [ ] Flat rate table (0–180km) is implemented correctly
-- [ ] >180km formula: `(km × 2) × 2.50` is implemented
-- [ ] Round trip: simple transfer × 2
-- [ ] All coefficients applied: seasonality, urgency, capacity, +15% margin, 10% VAT
-- [ ] At least 5 unit tests with known inputs and expected outputs
-- [ ] Function passes all tests before connecting to AI
+### Règle 2 : Choisir UN SEUL Orchestrateur
+- Soit n8n AI Agent (cerveau) SOIT Vercel AI SDK (cerveau)
+- Pas les deux
+- n8n peut toujours être utilisé dans l'Option B pour la planification et les écritures CRM — mais ce n'est pas le cerveau IA dans ce cas
+- Les configurations bi-agent créent un état cassé et sont impossibles à déboguer en une semaine
 
-### Follow-up System
-- [ ] n8n Schedule Trigger configured (daily or 2-minute demo mode)
-- [ ] Query: leads with Status = "Quote Sent" or "Follow-up 1" AND next_followup_at ≤ today
-- [ ] Check relance_count < 2 before sending — if = 2, set status "Closed" instead
-- [ ] After sending: relance_count + 1, update next_followup_at, update status
-- [ ] Accepted / Refused updated manually by salesperson in Airtable (no inbound email parsing)
+### Règle 3 : La Démo Doit Être Live
+- Le jury attend un système réel et fonctionnel pendant la démo
+- Les captures d'écran, vidéos Loom ou "voici ce que ça donnerait" ne sont pas acceptables
+- n8n doit être accessible depuis internet pendant la démo (tunnel ngrok/cloudflare ou n8n cloud)
+- Tester le parcours complet de démo au moins deux fois la veille
 
-### Security & Compliance
-- [ ] Client message separated from system instructions in prompts
-- [ ] No PII in test data (use fake names, fake emails)
-- [ ] Data purpose documented for each field
-- [ ] .env.local never committed to Git
-- [ ] Webhook has basic auth or secret token
+### Règle 4 : Les Trois Membres de l'Équipe Doivent Parler
+- Le bloc C oral (25 pts) requiert que tous les membres présentent
+- Planifier les attributions de parole MAINTENANT
+- Ceux qui ne parlent pas ne peuvent pas être notés sur le bloc oral
+
+### Règle 5 : Pas de Rendu en Retard
+- Le système n'accepte pas les travaux en retard
+- Soumettre le L1 avant le 24 juin à 23h59 même si incomplet
+- Soumettre le L2+L3 avant le 29 juin à 23h59 même si incomplet
+
+### Règle 6 : L'Interface Conversationnelle Est l'Interface Centrale
+- Le chat/formulaire EST la page principale — pas un widget dans un coin
+- Inspiration : Mindtrip.ai (à consulter)
+- Page de destination classique + bulle chatbot flottante = mauvaise interprétation du brief
+
+### Règle 7 : Gérer >85 Passagers
+- Un nombre de passagers >85 doit basculer en statut "Cas Complexe"
+- Afficher un message expliquant que le lead sera traité par un commercial
+- Ne pas générer de devis pour les groupes >85
+
+### Règle 8 : Les Coefficients Tarifaires Doivent Être Modifiables dans la Base de Données
+- Les coefficients de saisonnalité, urgence et capacité vivent dans la table Matrices
+- Le client doit pouvoir les modifier sans toucher au code
+- Explicitement mentionné dans le document des règles de tarification
 
 ---
 
-## 🟢 Quality Checklist (Affects Code Quality Score)
+## 🟡 Checklist Architecture
 
-### Git & Repository
-- [ ] Repository initialized on Day 1
-- [ ] Commit messages are descriptive: `feat: implement calculer_devis() with capacity coefficient`
-- [ ] At least one commit per working session (show progression)
-- [ ] README.md exists with: project description, architecture diagram, setup steps
-- [ ] .gitignore includes: .env.local, node_modules/, .next/
+### Conception de l'Agent
+- [ ] Le prompt système définit : rôle, garde-fous (pas de calcul de prix), ton, conditions d'escalade
+- [ ] La température est BASSE (0,0–0,2) pour les étapes d'extraction de données
+- [ ] La liste d'outils est définie et minimale (moindre privilège)
+- [ ] L'agent extrait des données structurées (schéma JSON/Zod) AVANT d'appeler un outil
+- [ ] La mémoire de session est maintenue dans une conversation (tableau de messages transmis au LLM)
+- [ ] Déclencheurs HITL : >85 pax, complétude < 70% (un email de clarification puis prise en charge humaine), conditions spéciales mentionnées par le client
+
+### Modèle de Données
+- [ ] Table Demandes : tous les champs requis (voir liste dans CLAUDE.md)
+- [ ] Table Matrices : saisonnalité, urgence, capacité, marge, options — tous modifiables
+- [ ] Table Devis : prix_ht, tva, prix_ttc, lignes, statut, url_pdf, date_envoi, relance_count
+- [ ] Table Clients : identité + historique
+- [ ] Le statut est mis à jour à chaque transition du pipeline
+
+### Moteur de Tarification
+- [ ] `calculer_devis()` est implémenté en TS/JS pur sans dépendance au LLM
+- [ ] La table de forfaits (0–180 km) est correctement implémentée
+- [ ] Formule >180 km : `(km × 2) × 2,50` est implémentée
+- [ ] Aller-retour : transfert simple × 2
+- [ ] Tous les coefficients appliqués : saisonnalité, urgence, capacité, marge +15%, TVA 10%
+- [ ] Au moins 5 tests unitaires avec entrées et sorties connues
+- [ ] La fonction passe tous les tests avant d'être connectée à l'IA
+
+### Système de Relances
+- [ ] Déclencheur Planifié n8n configuré (quotidien ou mode démo 2 minutes)
+- [ ] Requête : leads avec Statut = "Devis Envoyé" ou "Relance 1" ET prochaine_relance ≤ aujourd'hui
+- [ ] Vérifier relance_count < 2 avant d'envoyer — si = 2, mettre le statut "Clôturé" à la place
+- [ ] Après envoi : relance_count + 1, mettre à jour prochaine_relance, mettre à jour le statut
+- [ ] Accepté / Refusé mis à jour manuellement par le commercial dans Airtable (pas d'analyse d'email entrant)
+
+### Sécurité & Conformité
+- [ ] Message client séparé des instructions système dans les prompts
+- [ ] Aucune PII dans les données de test (utiliser de faux noms, faux emails)
+- [ ] Finalité documentée pour chaque champ de données
+- [ ] .env.local jamais commité dans Git
+- [ ] Le webhook dispose d'une authentification basique ou d'un token secret
+
+---
+
+## 🟢 Checklist Qualité (Affecte le Score de Qualité du Code)
+
+### Git & Dépôt
+- [ ] Dépôt initialisé le Jour 1
+- [ ] Messages de commit descriptifs : `feat: implémenter calculer_devis() avec coefficient de capacité`
+- [ ] Au moins un commit par session de travail (montrer la progression)
+- [ ] README.md existe avec : description du projet, schéma d'architecture, étapes de configuration
+- [ ] .gitignore inclut : .env.local, node_modules/, .next/
 
 ### Tests
-- [ ] `calculer_devis()` unit tests written (minimum 5 cases)
-- [ ] Edge case tests: 85 passengers (boundary), <30km, >300km
-- [ ] Test for round trip vs one-way
+- [ ] Tests unitaires pour `calculer_devis()` rédigés (minimum 5 cas)
+- [ ] Tests de cas limites : 85 passagers (frontière), <30 km, >300 km
+- [ ] Test pour aller-retour vs aller simple
 
 ### Documentation
-- [ ] L3 technical procedure: how to run the system from scratch
-- [ ] L3 team procedure: step-by-step for a salesperson
-- [ ] Architecture diagram in README (can be ASCII or Mermaid)
+- [ ] L3 procédure technique : comment lancer le système de zéro
+- [ ] L3 procédure équipe : étape par étape pour un commercial
+- [ ] Schéma d'architecture dans README (ASCII ou Mermaid)
 
 ---
 
-## Demo Scenarios to Prepare
+## Scénarios de Démo à Préparer
 
-Test these paths before July 1:
+Tester ces parcours avant le 1er juillet :
 
-1. **Happy path** — Standard lead, complete data, quote sent within session
-2. **Incomplete lead** — Agent asks for missing information (e.g., destination city missing)
-3. **Urgency handling** — "I need a bus for tomorrow" → urgency coefficient applied, fast follow-up
-4. **>85 passengers** → Complex Case → human escalation message
-5. **Follow-up trigger** — Set to 2-minute delay for demo, show automated email being sent
-6. **Round trip** — Apply × 2 to base price, show calculation breakdown
-7. **HITL scenario** — High value quote or very complex request → agent says "a salesperson will contact you"
+1. **Parcours nominal** — Lead standard, données complètes, devis envoyé dans la session
+2. **Lead incomplet** — L'agent demande l'information manquante (ex. ville de destination manquante)
+3. **Gestion de l'urgence** — "J'ai besoin d'un bus pour demain" → coefficient d'urgence appliqué, relance rapide
+4. **>85 passagers** → Cas Complexe → message d'escalade humaine
+5. **Déclencheur de relance** — Régler à 2 minutes de délai pour la démo, montrer l'envoi automatique de l'email
+6. **Aller-retour** — Appliquer × 2 au prix de base, montrer le détail du calcul
+7. **Scénario HITL** — Devis de haute valeur ou demande très complexe → l'agent dit "un commercial vous contactera"
 
 ---
 
-## Common Mistakes to Avoid
+## Erreurs Courantes à Éviter
 
-| Mistake | Consequence |
+| Erreur | Conséquence |
 |---------|------------|
-| LLM generating price estimates | Hallucination risk, graded under reliability |
-| Implementing both n8n and Vercel AI SDK as brain | Two agents fighting, broken state |
-| Building a corner chatbot instead of central UI | Misunderstands the brief |
-| Hardcoding pricing coefficients | Client cannot update them, breaks the brief requirement |
-| Not checking relance_count before sending follow-up | Same lead gets duplicate emails during demo |
-| Not testing with n8n accessible publicly | Demo fails if localhost not tunneled |
-| Only one person speaks at defense | 25 pts lost for silent members |
-| Missing the L1 deadline | 15 pts gone, no recovery |
-| Committing .env.local | API keys exposed, security issue |
-| Testing with expensive LLM models | Burns the €10-15 budget before demo day |
+| LLM générant des estimations de prix | Risque d'hallucination, noté sous fiabilité |
+| Implémenter n8n ET Vercel AI SDK comme cerveau | Deux agents en conflit, état cassé |
+| Construire un chatbot dans un coin au lieu d'une UI centrale | Mauvaise compréhension du brief |
+| Coefficients de tarification codés en dur | Le client ne peut pas les mettre à jour, contrevient au brief |
+| Ne pas vérifier relance_count avant d'envoyer une relance | Le même lead reçoit des emails en double pendant la démo |
+| Ne pas tester avec n8n accessible publiquement | La démo échoue si localhost n'est pas tunnelisé |
+| Une seule personne parle à la soutenance | 25 pts perdus pour les membres silencieux |
+| Manquer l'échéance du L1 | 15 pts perdus sans récupération possible |
+| Commiter .env.local | Clés API exposées, problème de sécurité |
+| Tester avec des modèles LLM coûteux | Brûle le budget de 10–15 € avant le jour de la démo |

@@ -6,6 +6,20 @@
 
 ---
 
+## 🔴 RIGHT NOW — L1 due June 24 at 23:59
+
+The draft is ready in `L1_DOSSIER_DE_CADRAGE.md`. Each person adds their section, then Gendell submits.
+
+| Who | What to do | Status |
+|---|---|---|
+| **Gendell** | Read the draft, push it to GitHub, submit PDF on Epitech platform before June 24 23:59 | ⬜ |
+| **Inde** | Open `L1_DOSSIER_DE_CADRAGE.md` → add 2–3 paragraphs in Section 2.1 (in French: what NeoTravel does today, why manual is a problem, what automation changes) → push | ⬜ |
+| **Yahia** | Open `L1_DOSSIER_DE_CADRAGE.md` → add 2–3 competitor examples in Section 9 (name + one line each: GetTransfer, Mozio, etc.) → push | ⬜ |
+
+Once L1 is submitted → move to Phase 2 below.
+
+---
+
 ## Deadlines at a Glance
 
 | Date | Deliverable | Who |

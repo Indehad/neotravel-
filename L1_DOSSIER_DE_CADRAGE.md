@@ -93,93 +93,38 @@ Le prototype couvre les 10 fonctions suivantes :
 
 ### 4.2 Architecture Schema
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                     INPUT LAYER                              │
-│        Multi-step form (Next.js · Vercel)                    │
-│                                                              │
-│  Name · Email · Phone · Departure · Destination             │
-│  Date · Passengers · Trip type · Urgency · Distance (km)    │
-└───────────────────────────┬──────────────────────────────────┘
-                            │ POST JSON
-                            ▼
-┌──────────────────────────────────────────────────────────────┐
-│           n8n WORKFLOW 1 — Lead Qualification                │
-│                                                              │
-│  [Webhook]                                                   │
-│      │                                                       │
-│      ▼                                                       │
-│  [Save to Airtable → Status: "New Lead"]                     │
-│      │                                                       │
-│      ▼                                                       │
-│  [Gemini AI — check completeness + passenger count]          │
-│      │                                                       │
-│      ├─── passengers > 85 ──────────────────────────────┐   │
-│      │                                                   ▼   │
-│      │                                    [Status: "Complex Case"] │
-│      │                                    [Send ack email to client] │
-│      │                                    [Alert sales team]  │
-│      │                                    → ■ STOP           │
-│      │                                                       │
-│      ├─── score < 70% ────────────────────────────────┐     │
-│      │                                                 ▼     │
-│      │                              [Status: "Incomplete"]   │
-│      │                              [Send clarification email] │
-│      │                              → ■ STOP (human takes over) │
-│      │                                                       │
-│      └─── score ≥ 70% AND passengers ≤ 85 ── QUALIFIED ─┐   │
-│                                                          ▼   │
-│                                          [calculer_devis()]  │
-│                                          (distance_km from   │
-│                                           form · passengers  │
-│                                           · date · urgency   │
-│                                           · trip_type)       │
-│                                              │               │
-│                                              ▼               │
-│                                          [Generate PDF]      │
-│                                              │               │
-│                                              ▼               │
-│                                          [Send email + PDF   │
-│                                           via Resend]        │
-│                                              │               │
-│                                              ▼               │
-│                                          [Status: "Quote Sent"] │
-│                                          [Set next_followup_at] │
-│                                          → HAND OFF TO WF 2  │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A([🖥️ Next.js Form\nname · email · departure · destination · distance · passengers]) -->|POST JSON| B
 
-┌──────────────────────────────────────────────────────────────┐
-│           n8n WORKFLOW 2 — Follow-up Scheduler               │
-│                                                              │
-│  [Schedule Trigger — every 2 min (demo) / daily (prod)]      │
-│      │                                                       │
-│      ▼                                                       │
-│  [Fetch Airtable: Status = "Quote Sent" or "Follow-up 1"    │
-│   AND next_followup_at ≤ today]                              │
-│      │                                                       │
-│      ▼                                                       │
-│  [relance_count < 2?]                                        │
-│      │                                                       │
-│      ├─── NO ──→ [Status: "Closed"] → ■ STOP                │
-│      │                                                       │
-│      └─── YES ─→ [Send follow-up email via Resend]          │
-│                  [relance_count + 1]                         │
-│                  [Status: "Follow-up 1" or "Follow-up 2"]   │
-│                  [Set next_followup_at]                      │
-│                  [Update Airtable] → ■ DONE                 │
-└──────────────────────────────────────────────────────────────┘
+    subgraph WF1 ["⚙️ n8n — Workflow 1 : Lead Qualification"]
+        B[Webhook] --> C[Save to Airtable\nStatus: New Lead]
+        C --> D{{"🤖 Gemini AI\nCheck completeness + passenger count"}}
 
-┌──────────────────────────────────────────────────────────────┐
-│         AIRTABLE — Central State Layer + Dashboard           │
-│                                                              │
-│  Every status change is written here.                        │
-│  Airtable Interface = real-time pipeline view for the team.  │
-│                                                              │
-│  New Lead → Incomplete → Quote Sent → Follow-up 1           │
-│  → Follow-up 2 → Closed / Complex Case                      │
-│                                                              │
-│  Accepted / Refused updated manually by salesperson.         │
-└──────────────────────────────────────────────────────────────┘
+        D -->|passengers > 85| E[❌ Complex Case\nAck email → Alert sales team]
+        D -->|score < 70%| F[⚠️ Incomplete\nClarification email → Human takes over]
+        D -->|score ≥ 70% AND pax ≤ 85| G
+
+        G[calculer_devis\ndistance · passengers · date · urgency · trip type] --> H[Generate PDF quote]
+        H --> I[Send email + PDF via Resend]
+        I --> J[Status: Quote Sent\nSet next_followup_at]
+    end
+
+    subgraph WF2 ["🕐 n8n — Workflow 2 : Follow-up Scheduler"]
+        K[Schedule Trigger\nevery 2 min demo · daily prod] --> L[Fetch Airtable\nStatus = Quote Sent or Follow-up 1\nAND next_followup_at ≤ today]
+        L --> M{relance_count < 2?}
+        M -->|YES| N[Send follow-up email\nrelance_count + 1 · update status]
+        M -->|NO| O[Status: Closed]
+    end
+
+    J --> K
+    E --> AT
+    F --> AT
+    J --> AT
+    N --> AT
+    O --> AT
+
+    AT[("🗄️ Airtable CRM\nCentral state layer\nDashboard via Airtable Interface")]
 ```
 
 ### Explanation

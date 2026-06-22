@@ -31,25 +31,38 @@ This project automates the full commercial chain:
 
 ## Architecture
 
-```
-[Next.js form] → POST JSON → [n8n Webhook]
-                                    ↓
-                        [Save to Airtable: "New Lead"]
-                                    ↓
-                        [Gemini: completeness + pax check]
-                         ↙              ↓              ↘
-               >85 pax          score < 70%        score ≥ 70%
-                  ↓                  ↓                   ↓
-           [Complex Case]      [Incomplete]       [calculer_devis()]
-           [Ack email]         [Clarif email]     [Generate PDF]
-           [Alert team]        [Human takes       [Send via Resend]
-                                over]             [Status: Quote Sent]
-                                                        ↓
-                                            [n8n Workflow 2 — Scheduler]
-                                            relance_count < 2 → send followup
-                                            relance_count = 2 → close lead
-                                                        ↓
-                                            [Airtable Dashboard]
+```mermaid
+flowchart TD
+    A([🖥️ Next.js Form\nname · email · departure · destination · distance · passengers]) -->|POST JSON| B
+
+    subgraph WF1 ["⚙️ n8n — Workflow 1 : Lead Qualification"]
+        B[Webhook] --> C[Save to Airtable\nStatus: New Lead]
+        C --> D{{"🤖 Gemini AI\nCheck completeness + passenger count"}}
+
+        D -->|passengers > 85| E[❌ Complex Case\nAck email → Alert sales team]
+        D -->|score < 70%| F[⚠️ Incomplete\nClarification email → Human takes over]
+        D -->|score ≥ 70% AND pax ≤ 85| G
+
+        G[calculer_devis\ndistance · passengers · date · urgency · trip type] --> H[Generate PDF quote]
+        H --> I[Send email + PDF via Resend]
+        I --> J[Status: Quote Sent\nSet next_followup_at]
+    end
+
+    subgraph WF2 ["🕐 n8n — Workflow 2 : Follow-up Scheduler"]
+        K[Schedule Trigger\nevery 2 min demo · daily prod] --> L[Fetch Airtable\nStatus = Quote Sent or Follow-up 1\nAND next_followup_at ≤ today]
+        L --> M{relance_count < 2?}
+        M -->|YES| N[Send follow-up email\nrelance_count + 1 · update status]
+        M -->|NO| O[Status: Closed]
+    end
+
+    J --> K
+    E --> AT
+    F --> AT
+    J --> AT
+    N --> AT
+    O --> AT
+
+    AT[("🗄️ Airtable CRM\nCentral state layer\nDashboard via Airtable Interface")]
 ```
 
 ### Key rule: the AI never calculates prices

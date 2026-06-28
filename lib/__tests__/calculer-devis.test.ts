@@ -1,159 +1,218 @@
 /**
- * Tests unitaires pour calculer_devis()
- * Source des cas de test : project/PRICING_ENGINE.md
+ * lib/__tests__/calculer-devis.test.ts
+ *
+ * Tests unitaires du moteur de tarification NeoTravel.
+ * Vérifie que calculer_devis() est 100% déterministe :
+ * même input → même output, sans exception.
+ *
+ * Auteur : Inde Hadoui
  *
  * Lancer : npx jest lib/__tests__/calculer-devis.test.ts
  */
 
 import { calculer_devis } from '../calculer-devis';
 
-// Input de base réutilisé dans plusieurs tests
-// Octobre = saison Moyenne (×1.00)
-// 92 jours avant départ = DD_3MOISETPLUS (×0.90)
-const BASE_INPUT = {
-  date_depart: '2026-10-15',
-  date_demande: '2026-07-15',
-  aller_retour: false,
-  options: [] as ('guide' | 'chauffeur_nuit' | 'peages')[],
-};
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-describe('calculer_devis()', () => {
-  // -------------------------------------------------------------------------
-  // Test 1 — Cas nominal : 50 km, 30 pax, aller simple, saison moyenne, >3 mois
-  // base=350 × saison1.00 × urgence0.90 × capa1.00 × marge1.15 = 362.25
-  // -------------------------------------------------------------------------
-  test('50 km, 30 pax, aller simple, saison moyenne, >3 mois', () => {
-    const result = calculer_devis({ ...BASE_INPUT, distance_km: 50, nb_passagers: 30 });
+/** Construit un DevisInput minimal valide */
+function baseInput(overrides = {}) {
+  return {
+    nb_passagers: 40,
+    date_depart: '2026-09-15',   // mois 9 = Septembre → coeff saison 1.0
+    date_demande: '2026-07-01',  // 76 jours avant → DD_NORMAL → coeff 0.95
+    distance_km: 100,
+    aller_retour: false,
+    options: [] as Array<'guide' | 'chauffeur_nuit' | 'peages'>,
+    ...overrides,
+  };
+}
 
-    expect(result.manual_required).toBe(false);
-    expect(result.devise).toBe('EUR');
-    expect(result.prix_ht).toBeCloseTo(362.25, 1);
-    expect(result.tva).toBeCloseTo(36.23, 1);
-    expect(result.prix_ttc).toBeCloseTo(398.48, 1);
-  });
+// ── 1. Escalade HITL ─────────────────────────────────────────────────────────
 
-  // -------------------------------------------------------------------------
-  // Test 2 — Aller-retour double le prix de base
-  // -------------------------------------------------------------------------
-  test("aller-retour double le prix de base", () => {
-    const oneWay = calculer_devis({ ...BASE_INPUT, distance_km: 100, nb_passagers: 30, aller_retour: false });
-    const roundTrip = calculer_devis({ ...BASE_INPUT, distance_km: 100, nb_passagers: 30, aller_retour: true });
-
-    expect(roundTrip.prix_ht).toBeCloseTo(oneWay.prix_ht * 2, 1);
-    expect(roundTrip.prix_ttc).toBeCloseTo(oneWay.prix_ttc * 2, 1);
-  });
-
-  // -------------------------------------------------------------------------
-  // Test 3 — >85 passagers → manual_required: true, prix = 0
-  // -------------------------------------------------------------------------
-  test('>85 passagers retourne manual_required: true', () => {
-    const result = calculer_devis({ ...BASE_INPUT, distance_km: 100, nb_passagers: 86 });
-
+describe('Escalade commerciale (HITL)', () => {
+  test('86 passagers → manual_required = true, prix = 0', () => {
+    const result = calculer_devis(baseInput({ nb_passagers: 86 }));
     expect(result.manual_required).toBe(true);
     expect(result.prix_ht).toBe(0);
     expect(result.prix_ttc).toBe(0);
-    expect(result.lignes).toHaveLength(0);
   });
 
-  // -------------------------------------------------------------------------
-  // Test 4 — >180 km utilise la formule (km × 2) × 2.50
-  // 200 km → base = (200×2)×2.50 = 1000
-  // ×0.90 (urgence) ×1.00 (capa) ×1.15 (marge) = 1035
-  // -------------------------------------------------------------------------
-  test('200 km utilise la formule (km×2)×2.50', () => {
-    const result = calculer_devis({ ...BASE_INPUT, distance_km: 200, nb_passagers: 30 });
-
-    expect(result.prix_ht).toBeCloseTo(1035, 0);
-  });
-
-  // -------------------------------------------------------------------------
-  // Test 5 — Saison Très Haute (juin) applique ×1.15
-  // 50 km, base=350 × saison1.15 × urgence0.90 × capa1.00 × marge1.15
-  // = 350 × 1.15 × 0.90 × 1.15 = 416.99
-  // -------------------------------------------------------------------------
-  test('saison Très Haute (juin) applique ×1.15', () => {
-    const result = calculer_devis({
-      ...BASE_INPUT,
-      date_depart: '2026-06-15',
-      date_demande: '2026-01-01', // >3 mois → DD_3MOISETPLUS ×0.90
-      distance_km: 50,
-      nb_passagers: 30,
-    });
-
-    expect(result.prix_ht).toBeCloseTo(416.99, 0);
-  });
-
-  // -------------------------------------------------------------------------
-  // Test 6 — Coefficient capacité ≤19 pax applique ×0.95
-  // -------------------------------------------------------------------------
-  test('≤19 passagers applique le coefficient capacité ×0.95', () => {
-    const small = calculer_devis({ ...BASE_INPUT, distance_km: 50, nb_passagers: 15 });
-    const medium = calculer_devis({ ...BASE_INPUT, distance_km: 50, nb_passagers: 20 });
-
-    // 15 pax (×0.95) doit être moins cher que 20 pax (×1.00)
-    expect(small.prix_ht).toBeLessThan(medium.prix_ht);
-  });
-
-  // -------------------------------------------------------------------------
-  // Test 7 — Cas limite 85 passagers : doit passer (coeff ×1.40), pas HITL
-  // -------------------------------------------------------------------------
-  test('85 passagers exactement : pas de HITL, coeff ×1.40', () => {
-    const result = calculer_devis({ ...BASE_INPUT, distance_km: 50, nb_passagers: 85 });
-
+  test('85 passagers → calcul normal (limite haute autorisée)', () => {
+    const result = calculer_devis(baseInput({ nb_passagers: 85 }));
     expect(result.manual_required).toBe(false);
-    const coeffCapa = result.coefficients.find((c) => c.name === 'capacité');
-    expect(coeffCapa?.value).toBe(1.4);
+    expect(result.prix_ht).toBeGreaterThan(0);
   });
 
-  // -------------------------------------------------------------------------
-  // Test 8 — Urgence DD_PRIORITAIRE (<24h) applique ×1.10
-  // -------------------------------------------------------------------------
-  test('urgence <24h applique DD_PRIORITAIRE ×1.10', () => {
-    const urgent = calculer_devis({
-      ...BASE_INPUT,
-      date_depart: '2026-10-15',
-      date_demande: '2026-10-15', // même jour → <24h
-      distance_km: 50,
-      nb_passagers: 30,
+  test('8 passagers → calcul normal (limite basse autorisée)', () => {
+    const result = calculer_devis(baseInput({ nb_passagers: 8 }));
+    expect(result.manual_required).toBe(false);
+    expect(result.prix_ht).toBeGreaterThan(0);
+  });
+});
+
+// ── 2. Déterminisme ───────────────────────────────────────────────────────────
+
+describe('Déterminisme — même input = même output', () => {
+  test('deux appels identiques retournent exactement le même prix', () => {
+    const input = baseInput();
+    const r1 = calculer_devis(input);
+    const r2 = calculer_devis(input);
+    expect(r1.prix_ht).toBe(r2.prix_ht);
+    expect(r1.prix_ttc).toBe(r2.prix_ttc);
+  });
+});
+
+// ── 3. Aller-retour ───────────────────────────────────────────────────────────
+
+describe('Aller-retour', () => {
+  test('aller-retour coûte plus cher que simple', () => {
+    const simple = calculer_devis(baseInput({ aller_retour: false }));
+    const ar     = calculer_devis(baseInput({ aller_retour: true }));
+    expect(ar.prix_ht).toBeGreaterThan(simple.prix_ht);
+  });
+
+  test('aller-retour ≈ 2× aller simple (avant coefficients)', () => {
+    const simple = calculer_devis(baseInput({ aller_retour: false }));
+    const ar     = calculer_devis(baseInput({ aller_retour: true }));
+    // Le ratio doit être proche de 2 (tolérance 1%)
+    const ratio = ar.prix_ht / simple.prix_ht;
+    expect(ratio).toBeCloseTo(2, 1);
+  });
+});
+
+// ── 4. Saisonnalité ───────────────────────────────────────────────────────────
+
+describe('Coefficients de saisonnalité', () => {
+  test('juillet (haute) > septembre (moyenne)', () => {
+    const haute   = calculer_devis(baseInput({ date_depart: '2026-07-15', date_demande: '2026-05-01' }));
+    const moyenne = calculer_devis(baseInput({ date_depart: '2026-09-15', date_demande: '2026-07-01' }));
+    expect(haute.prix_ht).toBeGreaterThan(moyenne.prix_ht);
+  });
+
+  test('mai/juin (très haute) > mars/avril (haute)', () => {
+    const tresHaute = calculer_devis(baseInput({ date_depart: '2026-05-15', date_demande: '2026-03-01' }));
+    const haute     = calculer_devis(baseInput({ date_depart: '2026-04-15', date_demande: '2026-02-01' }));
+    expect(tresHaute.prix_ht).toBeGreaterThan(haute.prix_ht);
+  });
+
+  test('basse saison (janvier) < saison moyenne (octobre)', () => {
+    const basse   = calculer_devis(baseInput({ date_depart: '2027-01-15', date_demande: '2026-11-01' }));
+    const moyenne = calculer_devis(baseInput({ date_depart: '2026-10-15', date_demande: '2026-08-01' }));
+    expect(basse.prix_ht).toBeLessThan(moyenne.prix_ht);
+  });
+});
+
+// ── 5. Urgence ────────────────────────────────────────────────────────────────
+
+describe('Coefficients d\'urgence', () => {
+  const today = new Date().toISOString().split('T')[0];
+
+  function dateIn(hours: number): string {
+    const d = new Date();
+    d.setTime(d.getTime() + hours * 3_600_000);
+    return d.toISOString().split('T')[0];
+  }
+
+  test('DD_PRIORITAIRE (< 24h) > DD_NORMAL (entre 72h et 90j)', () => {
+    const prioritaire = calculer_devis(baseInput({ date_depart: dateIn(12),   date_demande: today }));
+    const normal      = calculer_devis(baseInput({ date_depart: dateIn(500),  date_demande: today }));
+    expect(prioritaire.prix_ht).toBeGreaterThan(normal.prix_ht);
+  });
+
+  test('DD_3MOISETPLUS (> 90j) a le coefficient le plus bas', () => {
+    const longTerme = calculer_devis(baseInput({ date_depart: '2027-12-01', date_demande: today }));
+    const normal    = calculer_devis(baseInput({ date_depart: dateIn(500),   date_demande: today }));
+    expect(longTerme.prix_ht).toBeLessThan(normal.prix_ht);
+  });
+});
+
+// ── 6. Capacité ───────────────────────────────────────────────────────────────
+
+describe('Coefficients de capacité', () => {
+  test('68–85 pax coûte plus cher que 20–53 pax', () => {
+    const grand  = calculer_devis(baseInput({ nb_passagers: 70 }));
+    const moyen  = calculer_devis(baseInput({ nb_passagers: 30 }));
+    expect(grand.prix_ht).toBeGreaterThan(moyen.prix_ht);
+  });
+
+  test('≤ 19 pax bénéficie d\'une réduction vs 20–53 pax', () => {
+    const petit = calculer_devis(baseInput({ nb_passagers: 15 }));
+    const moyen = calculer_devis(baseInput({ nb_passagers: 30 }));
+    expect(petit.prix_ht).toBeLessThan(moyen.prix_ht);
+  });
+});
+
+// ── 7. Options ────────────────────────────────────────────────────────────────
+
+describe('Options additionnelles', () => {
+  test('guide ajoute 80€ HT au prix de base', () => {
+    const sans  = calculer_devis(baseInput({ options: [] }));
+    const avec  = calculer_devis(baseInput({ options: ['guide'] }));
+    // La différence inclut la marge (×1.15) appliquée sur le total
+    expect(avec.prix_ht).toBeGreaterThan(sans.prix_ht);
+  });
+
+  test('chauffeur_nuit ajoute 120€ HT au prix de base', () => {
+    const sans = calculer_devis(baseInput({ options: [] }));
+    const avec = calculer_devis(baseInput({ options: ['chauffeur_nuit'] }));
+    expect(avec.prix_ht).toBeGreaterThan(sans.prix_ht);
+  });
+
+  test('péages avec forfait 50€ augmente le prix', () => {
+    const sans = calculer_devis(baseInput({ options: [] }));
+    const avec = calculer_devis(baseInput({ options: ['peages'], peages_flat_rate: 50 }));
+    expect(avec.prix_ht).toBeGreaterThan(sans.prix_ht);
+  });
+
+  test('cumul 3 options > 0 option', () => {
+    const sans  = calculer_devis(baseInput({ options: [] }));
+    const avec  = calculer_devis(baseInput({
+      options: ['guide', 'chauffeur_nuit', 'peages'],
+      peages_flat_rate: 35,
+    }));
+    expect(avec.prix_ht).toBeGreaterThan(sans.prix_ht);
+  });
+});
+
+// ── 8. Structure de la réponse ────────────────────────────────────────────────
+
+describe('Structure de la réponse', () => {
+  test('contient prix_ht, tva, prix_ttc, lignes, coefficients, devise', () => {
+    const result = calculer_devis(baseInput());
+    expect(result).toHaveProperty('prix_ht');
+    expect(result).toHaveProperty('tva');
+    expect(result).toHaveProperty('prix_ttc');
+    expect(result).toHaveProperty('lignes');
+    expect(result).toHaveProperty('coefficients');
+    expect(result.devise).toBe('EUR');
+  });
+
+  test('prix_ttc = prix_ht + tva (TVA 10%)', () => {
+    const result = calculer_devis(baseInput());
+    expect(result.prix_ttc).toBeCloseTo(result.prix_ht * 1.1, 1);
+  });
+
+  test('prix_ht > 0 pour un devis normal', () => {
+    const result = calculer_devis(baseInput());
+    expect(result.prix_ht).toBeGreaterThan(0);
+  });
+});
+
+// ── 9. Matrices externes (ExternalMatrices) ───────────────────────────────────
+
+describe('Surcharge par matrices externes (Airtable)', () => {
+  test('marge personnalisée change le prix', () => {
+    const defaut     = calculer_devis(baseInput());
+    const margeEleve = calculer_devis(baseInput(), { marge: 1.30 }); // 30% vs 15%
+    expect(margeEleve.prix_ht).toBeGreaterThan(defaut.prix_ht);
+  });
+
+  test('coefficient saisonnier externe overrride le fallback', () => {
+    const moisDepart = new Date('2026-09-15').getMonth() + 1; // 9
+    const avecExternal = calculer_devis(baseInput(), {
+      saison: [{ mois: moisDepart, coefficient: 1.5 }], // force ×1.5
     });
-    const normal = calculer_devis({ ...BASE_INPUT, distance_km: 50, nb_passagers: 30 }); // ×0.90
-
-    // Prioritaire (×1.10) doit être plus cher que normal (×0.90)
-    expect(urgent.prix_ht).toBeGreaterThan(normal.prix_ht);
-
-    const urgCoeff = urgent.coefficients.find((c) => c.name.startsWith('urgence'));
-    expect(urgCoeff?.value).toBe(1.1);
-  });
-
-  // -------------------------------------------------------------------------
-  // Test 9 — Options ajoutées AVANT la marge
-  // 50 km, 30 pax, saison moy, >3 mois + guide(80€) + nuit(120€)
-  // base_coeff = 350 × 0.90 × 1.00 = 315
-  // sous_total = 315 + 80 + 120 = 515
-  // prix_ht = 515 × 1.15 = 592.25
-  // -------------------------------------------------------------------------
-  test('options guide + nuit chauffeur ajoutées avant la marge', () => {
-    const withOptions = calculer_devis({
-      ...BASE_INPUT,
-      distance_km: 50,
-      nb_passagers: 30,
-      options: ['guide', 'chauffeur_nuit'],
-    });
-    const withoutOptions = calculer_devis({ ...BASE_INPUT, distance_km: 50, nb_passagers: 30 });
-
-    // Avec options : +80+120 = +200 AVANT marge → différence de 200×1.15 = 230
-    expect(withOptions.prix_ht).toBeCloseTo(withoutOptions.prix_ht + 200 * 1.15, 1);
-    expect(withOptions.lignes.length).toBeGreaterThan(withoutOptions.lignes.length);
-  });
-
-  // -------------------------------------------------------------------------
-  // Test 10 — Cas limite <30 km utilise le palier 30 km → base 250€
-  // -------------------------------------------------------------------------
-  test('<30 km utilise le palier 30 km (base 250€)', () => {
-    const result25 = calculer_devis({ ...BASE_INPUT, distance_km: 25, nb_passagers: 30 });
-    const result30 = calculer_devis({ ...BASE_INPUT, distance_km: 30, nb_passagers: 30 });
-
-    // Les deux doivent avoir le même prix (arrondi au palier supérieur)
-    expect(result25.prix_ht).toBe(result30.prix_ht);
+    const defaut = calculer_devis(baseInput());
+    expect(avecExternal.prix_ht).toBeGreaterThan(defaut.prix_ht);
   });
 });

@@ -81,7 +81,7 @@ function ProgressBar({ step }: { step: number }) {
   return (
     <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
       <div
-        className="h-full bg-blue-600 transition-all duration-500 ease-out"
+        className="h-full bg-olive transition-all duration-500 ease-out"
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -99,8 +99,8 @@ function OptionPill({
       className={`
         flex items-center gap-2 px-5 py-3 rounded-full border-2 text-sm font-medium transition-all duration-150
         ${selected
-          ? 'border-blue-600 bg-blue-600 text-white'
-          : 'border-gray-300 bg-white text-gray-700 hover:border-blue-400'}
+          ? 'border-olive bg-olive text-navy' 
+          : 'border-white bg-white text-navy hover:bg-olive hover:border-olive hover:text-navy'}
       `}
     >
       {selected && <span>✓</span>}
@@ -239,16 +239,15 @@ export default function NeoTravelForm() {
   // ── Step content ───────────────────────────────────────────────────────────
   const stepContent = () => {
     const inputClass =
-      'w-full max-w-md border-0 border-b-2 border-gray-300 focus:border-blue-600 outline-none text-xl py-2 bg-transparent text-white placeholder-gray-400 transition-colors';
-
+        'w-full max-w-md border-0 border-b-2 border-olive focus:border-white outline-none text-xl py-2 bg-transparent text-white placeholder-gray-500 transition-colors';
     switch (step) {
       // Welcome
       case 0:
         return (
           <div className="text-center"> 
-            <div className="mx-auto mb-2 w-89 h-89 relative -mt-8 border-4 border-white rounded-full overflow-hidden shadow-lg"> {/* Increased width/height here */}
+            <div className="mx-auto mb-2 w-89 h-89 relative -mt-8 shadow-lg">
               <Image 
-                src="/NeoTravelLogo.png" 
+                src="/NeoTravelLogoV2.png" 
                 alt="NeoTravel Logo" 
                 fill 
                 className="object-cover" 
@@ -274,7 +273,7 @@ export default function NeoTravelForm() {
       case 1:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 1 / {TOTAL_STEPS}</p>
+              <p className="text-olive text-sm font-semibold mb-2">Question 1 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-8">Comment vous appelez-vous ?</h2>
             <div className="space-y-6 max-w-md">
               <input
@@ -302,7 +301,7 @@ export default function NeoTravelForm() {
       case 2:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 2 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 2 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-2">Votre adresse email ?</h2>
             <p className="text-gray-300 mb-8">Nous y enverrons votre devis.</p>
             <input
@@ -322,7 +321,7 @@ export default function NeoTravelForm() {
       case 3:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 3 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 3 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-2">Votre numéro de téléphone ?</h2>
             <p className="text-gray-500 mb-8">Pour vous contacter si nécessaire.</p>
             <input
@@ -342,7 +341,7 @@ export default function NeoTravelForm() {
       case 4:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 4 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 4 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-8">Quelle est la ville de départ ?</h2>
             <input
               ref={inputRef as React.Ref<HTMLInputElement>}
@@ -359,7 +358,7 @@ export default function NeoTravelForm() {
       case 5:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 5 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 5 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-8">Et la ville d'arrivée ?</h2>
             <input
               ref={inputRef as React.Ref<HTMLInputElement>}
@@ -376,7 +375,7 @@ export default function NeoTravelForm() {
       case 6:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 6 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 6 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-8">Quelle est la date de départ ?</h2>
             <input
               ref={inputRef as React.Ref<HTMLInputElement>}
@@ -394,7 +393,7 @@ export default function NeoTravelForm() {
       case 7:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 7 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 7 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-2">Combien de passagers ?</h2>
             <p className="text-gray-300 mb-8">
               Au-delà de 85 passagers, un commercial vous contactera personnellement.
@@ -417,7 +416,7 @@ export default function NeoTravelForm() {
       case 8:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 8 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 8 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-2">Distance estimée du trajet ?</h2>
             <p className="text-gray-300 mb-8">En kilomètres. Une estimation suffit.</p>
             <div className="flex items-baseline gap-3 max-w-md">
@@ -440,7 +439,7 @@ export default function NeoTravelForm() {
       case 9:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 9 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 9 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-8">Aller simple ou aller-retour ?</h2>
             <div className="flex gap-4">
               {[
@@ -454,7 +453,7 @@ export default function NeoTravelForm() {
                   className={`
                     flex-1 max-w-xs py-5 px-6 rounded-xl border-2 text-base font-semibold transition-all
                     ${data.aller_retour === value
-                      ? 'border-blue-600 bg-blue-50 text-blue-700'
+                      ? 'border-olive bg-blue-50 text-blue-700'
                       : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'}
                   `}
                 >
@@ -469,7 +468,7 @@ export default function NeoTravelForm() {
       case 10:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 10 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 10 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-2">Options souhaitées ?</h2>
             <p className="text-gray-300 mb-8">Sélectionnez tout ce qui s'applique (facultatif).</p>
             <div className="flex flex-wrap gap-3">
@@ -499,12 +498,12 @@ export default function NeoTravelForm() {
       case 11:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Question 11 / {TOTAL_STEPS}</p>
+            <p className="text-olive text-sm font-semibold mb-2">Question 11 / {TOTAL_STEPS}</p>
             <h2 className="text-3xl font-bold text-white mb-2">Informations complémentaires ?</h2>
             <p className="text-gray-500 mb-8">Type de groupe, horaires précis, contraintes particulières… (facultatif)</p>
             <textarea
               ref={inputRef as React.Ref<HTMLTextAreaElement>}
-              className="w-full max-w-md border-2 border-gray-200 focus:border-blue-600 outline-none text-base p-3 rounded-xl bg-white text-white placeholder-gray-400 transition-colors resize-none"
+              className="w-full max-w-md border-2 border-gray-200 focus:border-olive outline-none text-base p-3 rounded-xl bg-white text-navy placeholder-gray-400 transition-colors resize-none"
               rows={4}
               placeholder="Ex. Groupe scolaire, départ à 8h, retour avant 20h..."
               value={data.notes}
@@ -517,7 +516,7 @@ export default function NeoTravelForm() {
       case 12:
         return (
           <div>
-            <p className="text-blue-600 text-sm font-semibold mb-2">Récapitulatif</p>
+            <p className="text-olive text-sm font-semibold mb-2">Récapitulatif</p>
             <h2 className="text-3xl font-bold text-white mb-6">Tout est correct ?</h2>
             <div className="max-w-md bg-gray-50 rounded-2xl p-5 space-y-3 text-sm text-gray-700 mb-8">
               <div className="flex justify-between"><span className="text-gray-400">Nom</span><span className="font-medium">{data.prenom} {data.nom}</span></div>
@@ -544,7 +543,7 @@ export default function NeoTravelForm() {
                 w-full max-w-md py-4 rounded-xl font-semibold text-lg transition-all
                 ${submitting
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'}
+                  : 'bg-olive hover:bg-white text-navy shadow-md'}
               `}
             >
               {submitting ? 'Envoi en cours…' : 'Envoyer ma demande →'}
@@ -584,7 +583,7 @@ export default function NeoTravelForm() {
           <div className="mt-8 flex items-center gap-4">
             <button
               onClick={goNext}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors"
+              className="bg-olive hover:bg-white text-navy font-semibold px-8 py-3 rounded-xl transition-colors"
             >
               Continuer →
             </button>

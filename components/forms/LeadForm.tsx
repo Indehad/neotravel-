@@ -32,7 +32,7 @@ export function LeadForm() {
       <Input {...register("distance")} type="number" placeholder="Distance (km)" />
       <Input {...register("passengers")} type="number" placeholder="Passagers" />
 
-      <button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700">
+      <button type="submit" disabled={isSubmitting} className="w-full bg-olive text-navy p-3 rounded-lg font-bold hover:bg-white">
         {isSubmitting ? "En cours..." : "Recevoir mon devis"}
       </button>
     </form>

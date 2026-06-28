@@ -36,7 +36,7 @@ function TypingIndicator() {
   return (
     <div className="flex items-end gap-3 mb-4">
       {/* Avatar Emma */}
-      <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+      <div className="w-8 h-8 rounded-full bg-olive flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
         E
       </div>
       <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
@@ -72,7 +72,7 @@ function Bubble({ msg }: { msg: Message }) {
           V
         </div>
       ) : (
-        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-olive flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
           E
         </div>
       )}
@@ -81,7 +81,7 @@ function Bubble({ msg }: { msg: Message }) {
       <div
         className={`max-w-[70%] px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed whitespace-pre-wrap ${
           isUser
-            ? 'bg-blue-600 text-white rounded-br-sm'
+            ? 'bg-olive text-white rounded-br-sm'
             : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm'
         }`}
       >
@@ -172,11 +172,11 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-navy text-white">
 
       {/* ── Header ── */}
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 shadow-sm flex-shrink-0">
-        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+        <div className="w-10 h-10 rounded-full bg-olive flex items-center justify-center text-white font-bold text-sm">
           E
         </div>
         <div>
@@ -211,7 +211,7 @@ export default function ChatPage() {
       {/* ── Input ── */}
       <div className="bg-white border-t border-gray-200 px-4 py-3 flex-shrink-0">
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-end gap-3 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
+          <div className="flex items-end gap-3 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2 focus-within:border-olive focus-within:ring-1 focus-within:ring-olive transition-all">
             <textarea
               ref={inputRef}
               value={input}
@@ -226,7 +226,7 @@ export default function ChatPage() {
             <button
               onClick={sendMessage}
               disabled={!input.trim() || loading}
-              className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors flex-shrink-0 mb-0.5"
+              className="w-8 h-8 rounded-full bg-olive flex items-center justify-center text-navy hover:bg-white transition-colors flex-shrink-0 mb-0.5"
               aria-label="Envoyer"
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">

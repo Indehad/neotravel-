@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -10,13 +9,8 @@ export default function Home() {
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-3">
-          <Image
-            src="/NeoTravelLogoV2.png"
-            alt="NeoTravel"
-            width={48}
-            height={48}
-            className="rounded-full"
-          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/NeoTravelLogoV2.png" alt="NeoTravel" width={48} height={48} className="rounded-full" />
           <div>
             <div className="font-bold text-white tracking-widest text-sm">NEOTRAVEL</div>
             <div className="text-xs" style={{ color: '#a3e635' }}>Transport de groupe avec chauffeur</div>

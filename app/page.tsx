@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 
-const PHONE = '01 23 45 67 89'; // ← remplacez par le vrai numéro NeoTravel
-
+const PHONE = '09 80 40 04 84'; 
 export default function Home() {
   return (
     <>

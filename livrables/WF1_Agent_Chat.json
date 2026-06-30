@@ -1,0 +1,1041 @@
+{
+  "name": "Neotravel — Agent Chat (FIXED)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "neotravel-chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a4efd4b3-16ee-4c32-8cc5-3f9d756e6405",
+      "name": "Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        192
+      ],
+      "webhookId": "d342dc15-d8ed-46de-87dd-024015226299"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "sessionId",
+              "name": "sessionId",
+              "value": "={{ $json.body?.sessionId ?? $json.sessionId ?? \"anon\" }}",
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "name": "message",
+              "value": "={{ $json.body?.chatInput ?? $json.body?.message ?? $json.chatInput ?? $json.message ?? \"\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "45513e1e-85f8-4c01-a200-c2bc2ab1f93c",
+      "name": "Normaliser Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Normaliser Payload').item.json.message }}",
+        "options": {
+          "systemMessage": "=Tu es Emma, conseillère commerciale de Neotravel.\nDate du jour : {{ $now.toISODate() }}.\nTu DOIS répondre EXCLUSIVEMENT par un objet JSON valide, sans aucun texte autour, sans balises markdown ```.\nFormat EXACT :\n{\n  \"reply\": \"<ta phrase à afficher au client>\",\n  \"status\": \"collecting\",\n  \"villeDepart\": \"\",\n  \"villeArrivee\": \"\",\n  \"dateDepart\": \"\",\n  \"nbPassagers\": 0,\n  \"allerRetour\": false,\n  \"prenom\": \"\",\n  \"nom\": \"\",\n  \"email\": \"\",\n  \"telephone\": \"\"\n}\n━━━ COLLECTE ━━━\n- Récupère : le trajet (villeDepart + villeArrivee), la date (dateDepart, à convertir au format YYYY-MM-DD), le nombre de passagers (nbPassagers).\n- Ensuite demande : prénom, nom et adresse email pour envoyer le devis.\n- allerRetour = false par défaut, sauf si le client précise un aller-retour.\n- Une seule question courte à la fois dans \"reply\". Vouvoiement, ton chaleureux, en français.\n- Tu ne calcules JAMAIS de prix ni de distance toi-même : tu ne fais que COLLECTER.\n- À CHAQUE réponse, recopie dans le JSON TOUS les champs déjà connus (reporte ceux des tours précédents). Ne perds jamais une info déjà donnée.\n━━━ DEMANDES INCOMPLÈTES ━━━\n- Si le client ne connaît pas encore certaines infos obligatoires (surtout la ville d'arrivée et/ou la date de départ) et souhaite finaliser plus tard, NE bloque PAS la conversation.\n- Récupère IMPÉRATIVEMENT son EMAIL (sans email, on ne peut rien lui envoyer), ainsi que son prénom/nom et toute info déjà disponible.\n- Une fois l'email obtenu, passe status à \"incomplet\", remplis les champs connus et laisse VIDES (\"\") ceux qu'il n'a pas.\n- Dans ce cas, \"reply\" doit être EXACTEMENT :\n\"Pas de souci ! Je vous envoie un email avec un lien pour compléter votre demande dès que vous aurez vos informations.\"\n━━━ STATUS ━━━\n- \"collecting\" tant que le client continue à donner ses infos et qu'il manque encore des champs.\n- \"incomplet\" quand le client n'a pas toutes les infos obligatoires mais a fourni son EMAIL et veut finaliser plus tard.\n- \"ready\" UNIQUEMENT quand villeDepart, villeArrivee, dateDepart, nbPassagers, prenom, nom ET email sont TOUS remplis.\nQuand status devient \"ready\", \"reply\" doit être EXACTEMENT :\n\"Parfait, votre demande vient d'être",
+          "maxIterations": 15
+        }
+      },
+      "id": "ecd9e818-349b-4351-afe0-8a7af2b654a7",
+      "name": "Agent Neotravel",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        896,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse la sortie JSON de l'agent (tolérant aux ``` et au texte parasite)\nconst raw = $json.output ?? $json.text ?? '';\nlet parsed;\ntry {\n  let s = String(raw).trim();\n  s = s.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```$/i, '').trim();\n  // récupère le 1er objet { ... } si du texte entoure le JSON\n  const i = s.indexOf('{'); const j = s.lastIndexOf('}');\n  if (i !== -1 && j !== -1) s = s.slice(i, j + 1);\n  parsed = JSON.parse(s);\n} catch (e) {\n  parsed = { reply: String(raw), status: 'collecting' };\n}\nif (!parsed.reply)  parsed.reply  = String(raw);\nif (!parsed.status) parsed.status = 'collecting';\nreturn [{ json: parsed }];"
+      },
+      "id": "f6109568-78af-460c-a91e-51751291c26f",
+      "name": "Parse Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"output\": $json.reply } }}",
+        "options": {}
+      },
+      "id": "f44a66b4-b737-4ab2-9ef9-1d81c822b456",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ready",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e6590e62-008f-49d5-a993-d45f99f2842e",
+      "name": "Devis pret ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1696,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Données collectées par l'agent\nconst villeDepart  = $json.villeDepart || '';\nconst villeArrivee = $json.villeArrivee || '';\nconst dateDepart   = $json.dateDepart || '';\nconst nbPassagers  = Number($json.nbPassagers || 0);\nconst allerRetour  = !!$json.allerRetour;\nconst guideDays      = Number($json.guideDays || 0);\nconst nuitsChauffeur = Number($json.nuitsChauffeur || 0);\nconst peagesEuros    = Number($json.peagesEuros || 0);\nconst prenom = $json.prenom || '';\nconst nom    = $json.nom || '';\nconst email  = $json.email || '';\nconst telephone = $json.telephone || '';\n\n// 1) Distance routière\nasync function geocode(ville) {\n  const data = await this.helpers.httpRequest({\n    method: 'GET',\n    url: 'https://nominatim.openstreetmap.org/search',\n    qs: { q: ville, format: 'json', limit: 1 },\n    headers: { 'User-Agent': 'Neotravel-Chat/1.0 contact@neotravel.fr' },\n    json: true,\n  });\n  if (!data || !data.length) throw new Error('Ville introuvable : ' + ville);\n  return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };\n}\nconst c1 = await geocode(villeDepart);\nconst c2 = await geocode(villeArrivee);\nconst osrm = await this.helpers.httpRequest({\n  method: 'GET',\n  url: 'https://router.project-osrm.org/route/v1/driving/' + c1.lon + ',' + c1.lat + ';' + c2.lon + ',' + c2.lat,\n  qs: { overview: 'false' },\n  json: true,\n});\nconst km = Math.round(osrm.routes[0].distance / 1000);\n\n// 2) Devis\nconst escalade = nbPassagers > 85;\nlet prixHT = null, tva = null, prixTTC = null;\nif (!escalade) {\n  const grille = [[10,250],[20,250],[30,250],[40,320],[50,350],[60,390],[70,430],[80,500],[90,540],[100,580],[110,620],[120,660],[130,700],[140,740],[150,780],[160,820],[170,860],[180,900]];\n  let prixBase;\n  if (km <= 180) { const p = grille.find(([s]) => km <= s); prixBase = p ? p[1] : 900; }\n  else { prixBase = km * 2 * 2.5; }\n  if (allerRetour) prixBase *= 2;\n  const mois = new Date(dateDepart).getMonth() + 1;\n  const sMap = [{m:[11,1,2,8],c:-7},{m:[12,10,9],c:0},{m:[3,4,7],c:10},{m:[5,6],c:15}];\n  let cS = 0; for (const x of sMap) { if (x.m.includes(mois)) { cS = x.c; break; } }\n  const h = (new Date(dateDepart) - new Date()) / 3600000;\n  let cU; if (h < 24) cU = 10; else if (h < 72) cU = 5; else if (h <= 2160) cU = -5; else cU = -10;\n  let cC; if (nbPassagers <= 19) cC = -5; else if (nbPassagers <= 53) cC = 0; else if (nbPassagers <= 63) cC = 15; else if (nbPassagers <= 67) cC = 20; else cC = 40;\n  let p = prixBase * (1 + cS/100) * (1 + cU/100) * (1 + cC/100);\n  p += (guideDays*80) + (nuitsChauffeur*120) + peagesEuros;\n  prixHT  = Math.round(p * 1.15 * 100) / 100;\n  tva     = Math.round(prixHT * 0.10 * 100) / 100;\n  prixTTC = Math.round(prixHT * 1.10 * 100) / 100;\n}\n\n// 3) HTML de l'email\nconst typeTrajet = allerRetour ? 'Aller-retour' : 'Aller simple';\nlet emailHtml = '';\n\nif (escalade) {\n  emailHtml = `\n  <!DOCTYPE html>\n  <html>\n  <body style=\"margin:0;background:#F4F6F9;font-family:Arial,sans-serif;padding:40px 0;\">\n    <table width=\"650\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(10,34,64,0.08);border-top:8px solid #0A2240;\">\n      <tr>\n        <td style=\"padding:40px 45px; color:#333333; font-size:15px; line-height:1.6;\">\n          <h2 style=\"color:#0A2240;font-size:22px;margin-top:0;\">Votre demande NeoTravel</h2>\n          <p>Bonjour ${prenom} ${nom},</p>\n          <p>Votre groupe de <strong>${nbPassagers} passagers</strong> dépasse notre capacité standard automatisée.</p>\n          <p>Notre équipe spécialisée étudie votre demande logistique pour vous proposer un ou plusieurs autocars adaptés. Un conseiller vous recontactera dans les meilleurs délais, du lundi au vendredi de 9h à 18h, avec une offre sur-mesure.</p>\n          <hr style=\"border:0; border-top:1px solid #E2E8F0; margin:30px 0;\">\n          <p style=\"font-weight:bold; color:#0A2240; margin-bottom:0;\">L'équipe NeoTravel</p>\n        </td>\n      </tr>\n    </table>\n  </body>\n  </html>`;\n} else {\n  emailHtml = `\n  <!DOCTYPE html>\n  <html>\n  <head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  </head>\n  <body style=\"margin:0;background:#F4F6F9;font-family:Arial,sans-serif;\">\n  <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#F4F6F9;padding:40px 0;\">\n  <tr>\n  <td align=\"center\">\n  <table width=\"650\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(10,34,64,0.08);\">\n    <tr>\n      <td style=\"background-color: #0A2240; height: 8px; line-height: 8px; font-size: 8px;\">&nbsp;</td>\n    </tr>\n    <tr>\n      <td style=\"background:#0A2240; padding:35px 30px; text-align:center;\">\n        <h1 style=\"color:white; margin:0; font-size:28px; letter-spacing:1px; font-weight:bold;\">NEOTRAVEL</h1>\n        <p style=\"color:#8AA84B; margin-top:6px; margin-bottom:0; font-size:14px; font-weight:bold; letter-spacing:0.5px;\">Transport de groupe avec chauffeur</p>\n      </td>\n    </tr>\n    <tr>\n      <td style=\"padding:40px 45px; color:#333333; font-size:15px; line-height:1.6;\">\n        <h2 style=\"margin-top:0; color:#0A2240; font-size:22px;\">Bonjour ${prenom} ${nom},</h2>\n        <p>Merci pour votre demande. Notre équipe a étudié votre projet avec la plus grande attention. Voici l'estimation personnalisée pour votre transport :</p>\n        \n        <table width=\"100%\" style=\"border-collapse:collapse; margin-top:30px;\">\n          <tr>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; color:#64748B;\">Départ</td>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; text-align:right; color:#0A2240;\"><b>${villeDepart}</b></td>\n          </tr>\n          <tr>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; color:#64748B;\">Arrivée</td>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; text-align:right; color:#0A2240;\"><b>${villeArrivee}</b></td>\n          </tr>\n          <tr>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; color:#64748B;\">Distance</td>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; text-align:right; font-weight:bold;\">${km} km</td>\n          </tr>\n          <tr>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; color:#64748B;\">Date</td>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; text-align:right; font-weight:bold;\">${dateDepart}</td>\n          </tr>\n          <tr>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; color:#64748B;\">Passagers</td>\n            <td style=\"padding:14px 12px; border-bottom:1px solid #E2E8F0; text-align:right; font-weight:bold;\">${nbPassagers}</td>\n          </tr>\n          <tr>\n            <td style=\"padding:14px 12px; color:#64748B;\">Type de trajet</td>\n            <td style=\"padding:14px 12px; text-align:right; font-weight:bold;\">${typeTrajet}</td>\n          </tr>\n        </table>\n\n        <div style=\"margin-top:35px; padding:25px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; text-align:center;\">\n          <h3 style=\"margin-top:0; color:#64748B; font-size:14px; text-transform:uppercase; letter-spacing:1px;\">Montant estimé</h3>\n          <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin-bottom:10px; font-size:14px; color:#64748B;\">\n            <tr>\n              <td align=\"left\">Prix HT :</td>\n              <td align=\"right\" style=\"font-weight:bold; color:#333333;\">${prixHT} €</td>\n            </tr>\n            <tr>\n              <td align=\"left\">TVA :</td>\n              <td align=\"right\" style=\"font-weight:bold; color:#333333;\">${tva} €</td>\n            </tr>\n          </table>\n          <div style=\"font-size:36px; color:#0A2240; font-weight:bold; margin-top:15px; border-top:1px dashed #E2E8F0; padding-top:15px;\">\n            ${prixTTC} € <span style=\"font-size:16px; font-weight:normal; color:#64748B;\">TTC</span>\n          </div>\n        </div>\n\n        <p style=\"margin-top:35px; font-weight:bold; color:#0A2240;\">Ce tarif comprend :</p>\n        <ul style=\"padding-left:5px; list-style:none; line-height:2;\">\n          <li>✔ Chauffeur professionnel certifié</li>\n          <li>✔ Carburant et kilomètres inclus</li>\n          <li>✔ Péages (si applicables et renseignés)</li>\n          <li>✔ Assurance passagers intégrée</li>\n          <li>✔ Assistance NeoTravel 24h/7j</li>\n        </ul>\n\n        <div style=\"text-align:center; margin-top:40px; margin-bottom:10px;\">\n          <a href=\"https://neotravel.fr\" target=\"_blank\" style=\"background:#8AA84B; color:white; padding:16px 35px; text-decoration:none; border-radius:8px; display:inline-block; font-weight:bold; font-size:16px; box-shadow:0 4px 12px rgba(138,168,75,0.25);\">📞 Confirmer ou modifier mon devis</a>\n        </div>\n        <p style=\"margin-top:40px; color:#94A3B8; font-size:13px; text-align:center; line-height:1.4;\">Ce devis est fourni à titre indicatif. Un conseiller dédié examinera votre dossier et reprendra contact avec vous dans les meilleurs délais, du lundi au vendredi de 9h à 18h, pour valider définitivement la réservation de votre véhicule.</p>\n      </td>\n    </tr>\n  </table>\n  </td>\n  </tr>\n  </table>\n  </body>\n  </html>`;\n}\n\nreturn [{ json: { prenom, nom, email, telephone, villeDepart, villeArrivee, dateDepart, nbPassagers, allerRetour, km, prixHT, tva, prixTTC, escalade, emailHtml } }];"
+      },
+      "id": "28a79e63-94e9-42bd-a8b9-9359afd46522",
+      "name": "Calculer Distance + Devis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apphcmnoff5FWbIX4",
+          "mode": "list",
+          "cachedResultName": "Project Neotravel"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl8ucaqSrDODAFNg",
+          "mode": "list",
+          "cachedResultName": "Demandes"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nom_prospect": "={{ ($json.prenom + ' ' + $json.nom).trim() }}",
+            "email": "={{ $json.email }}",
+            "telephone": "={{ $json.telephone }}",
+            "ville_depart": "={{ $json.villeDepart }}",
+            "ville_arrivee": "={{ $json.villeArrivee }}",
+            "date_depart": "={{ $json.dateDepart }}",
+            "nb_passagers": "={{ $json.nbPassagers }}",
+            "distance_km": "={{ $json.km }}",
+            "aller_retour": "={{ $json.allerRetour }}",
+            "statut": "Nouveau Lead"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "nom_prospect",
+              "displayName": "nom_prospect",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telephone",
+              "displayName": "telephone",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ville_depart",
+              "displayName": "ville_depart",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ville_arrivee",
+              "displayName": "ville_arrivee",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date_depart",
+              "displayName": "date_depart",
+              "type": "dateTime",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nb_passagers",
+              "displayName": "nb_passagers",
+              "type": "number",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "distance_km",
+              "displayName": "distance_km",
+              "type": "number",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "aller_retour",
+              "displayName": "aller_retour",
+              "type": "boolean",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "statut",
+              "displayName": "statut",
+              "type": "string",
+              "required": false,
+              "display": true,
+              "removed": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        2144,
+        96
+      ],
+      "id": "a735b478-2531-4cdf-b6d8-413a73cd559e",
+      "name": "Create a record in Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "jBEcJNsCOhPSHnob",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "re_YCU5zRCA_NePiG4ZWszA7CdsgNMEf8Qe8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ from: 'onboarding@resend.dev', to: $('Calculer Distance + Devis').item.json.email, subject: 'Votre devis NeoTravel - ' + $('Calculer Distance + Devis').item.json.villeDepart + ' vers ' + $('Calculer Distance + Devis').item.json.villeArrivee, html: $('Calculer Distance + Devis').item.json.emailHtml }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2368,
+        96
+      ],
+      "id": "e69bfdb2-8ffc-4df3-ac35-a9fb0a2e2f98",
+      "name": "Envoyer Email (Resend)"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatVercelAiGateway",
+      "typeVersion": 1,
+      "position": [
+        912,
+        416
+      ],
+      "id": "f63ea749-be8d-4a95-acdc-ee4a6a92af5e",
+      "name": "Vercel AI Gateway Chat Model",
+      "credentials": {
+        "vercelAiGatewayApi": {
+          "id": "PYuAESgwwD8htmEj",
+          "name": "Vercel AI Gateway account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Normaliser Payload').item.json.sessionId }}",
+        "contextWindowLength": 20
+      },
+      "id": "0869f760-6e94-43e3-9c6c-bb7f215a4a03",
+      "name": "Session Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        1040,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a9ddc851-b0a7-4f6c-a75e-92b5ba4c3871",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "incomplet",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1920,
+        288
+      ],
+      "id": "d25c2025-8e2c-46ca-a91a-fca453ead2be",
+      "name": "Manque Info"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apphcmnoff5FWbIX4",
+          "mode": "list",
+          "cachedResultName": "Project Neotravel",
+          "cachedResultUrl": "https://airtable.com/apphcmnoff5FWbIX4"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl8ucaqSrDODAFNg",
+          "mode": "list",
+          "cachedResultName": "Demandes",
+          "cachedResultUrl": "https://airtable.com/apphcmnoff5FWbIX4/tbl8ucaqSrDODAFNg"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "aller_retour": false,
+            "urgence": false
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "nom_prospect",
+              "displayName": "nom_prospect",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "telephone",
+              "displayName": "telephone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ville_depart",
+              "displayName": "ville_depart",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ville_arrivee",
+              "displayName": "ville_arrivee",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date_depart",
+              "displayName": "date_depart",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date_retour",
+              "displayName": "date_retour",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "nb_passagers",
+              "displayName": "nb_passagers",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "type_vehicule",
+              "displayName": "type_vehicule",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "minibus",
+                  "value": "minibus"
+                },
+                {
+                  "name": "midibus",
+                  "value": "midibus"
+                },
+                {
+                  "name": "standard",
+                  "value": "standard"
+                },
+                {
+                  "name": "large",
+                  "value": "large"
+                },
+                {
+                  "name": "Berline",
+                  "value": "Berline"
+                },
+                {
+                  "name": "Van",
+                  "value": "Van"
+                },
+                {
+                  "name": "Minibus",
+                  "value": "Minibus"
+                },
+                {
+                  "name": "SUV",
+                  "value": "SUV"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "aller_retour",
+              "displayName": "aller_retour",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "options",
+              "displayName": "options",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "options": [
+                {
+                  "name": "guide",
+                  "value": "guide"
+                },
+                {
+                  "name": "chauffeur_nuit",
+                  "value": "chauffeur_nuit"
+                },
+                {
+                  "name": "peages",
+                  "value": "peages"
+                },
+                {
+                  "name": "WiFi",
+                  "value": "WiFi"
+                },
+                {
+                  "name": "Siège bébé",
+                  "value": "Siège bébé"
+                },
+                {
+                  "name": "Climatisation",
+                  "value": "Climatisation"
+                },
+                {
+                  "name": "Eau à bord",
+                  "value": "Eau à bord"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "distance_km",
+              "displayName": "distance_km",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "message_libre",
+              "displayName": "message_libre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "statut",
+              "displayName": "statut",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Nouveau Lead",
+                  "value": "Nouveau Lead"
+                },
+                {
+                  "name": "Incomplet",
+                  "value": "Incomplet"
+                },
+                {
+                  "name": "Qualifié",
+                  "value": "Qualifié"
+                },
+                {
+                  "name": "Devis envoyé",
+                  "value": "Devis envoyé"
+                },
+                {
+                  "name": "Relance 1",
+                  "value": "Relance 1"
+                },
+                {
+                  "name": "Relance 2",
+                  "value": "Relance 2"
+                },
+                {
+                  "name": "Accepté",
+                  "value": "Accepté"
+                },
+                {
+                  "name": "Refusé",
+                  "value": "Refusé"
+                },
+                {
+                  "name": "Cas Complexe",
+                  "value": "Cas Complexe"
+                },
+                {
+                  "name": "Clôturé",
+                  "value": "Clôturé"
+                },
+                {
+                  "name": "En attente",
+                  "value": "En attente"
+                },
+                {
+                  "name": "Confirmée",
+                  "value": "Confirmée"
+                },
+                {
+                  "name": "Refusée",
+                  "value": "Refusée"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "urgence",
+              "displayName": "urgence",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "completeness_score",
+              "displayName": "completeness_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "missing_fields",
+              "displayName": "missing_fields",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date_demande",
+              "displayName": "date_demande",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "next_followup_at",
+              "displayName": "next_followup_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "relance_count",
+              "displayName": "relance_count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "notes_commercial",
+              "displayName": "notes_commercial",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "client",
+              "displayName": "client",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "nb_devis",
+              "displayName": "nb_devis",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Devis",
+              "displayName": "Devis",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        2368,
+        288
+      ],
+      "id": "1704baf6-7976-469a-b230-32e3ebfd12ca",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "jBEcJNsCOhPSHnob",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// === Préparer Email Clarification (demande incomplète) ===\n// Données collectées par l'agent\nconst villeDepart  = $json.villeDepart || '';\nconst villeArrivee = $json.villeArrivee || '';\nconst dateDepart   = $json.dateDepart || '';\nconst nbPassagers  = Number($json.nbPassagers || 0);\nconst prenom = $json.prenom || '';\nconst nom    = $json.nom || '';\nconst email  = $json.email || '';\nconst telephone = $json.telephone || '';\n\n// On recalcule nous-mêmes les champs obligatoires manquants\nconst manquants = [];\nif (!villeDepart)  manquants.push('Votre ville de départ');\nif (!villeArrivee) manquants.push(\"Votre ville d'arrivée (destination)\");\nif (!dateDepart)   manquants.push('Votre date de départ');\nif (!nbPassagers)  manquants.push('Le nombre de passagers');\n\nconst listeManquants = manquants.map(m => `<li>➡️ ${m}</li>`).join('');\n\n// Lien de retour vers le chat / la page devis (À REMPLACER par ton URL réelle)\nconst lienCompletion = 'https://neotravel.fr/devis';\n\nconst emailHtml = `\n<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n</head>\n<body style=\"margin:0;background:#F4F6F9;font-family:Arial,sans-serif;\">\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#F4F6F9;padding:40px 0;\">\n<tr>\n<td align=\"center\">\n<table width=\"650\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(10,34,64,0.08);\">\n  <tr>\n    <td style=\"background:#0A2240; padding:35px 30px; text-align:center;\">\n      <h1 style=\"color:white; margin:0; font-size:28px; letter-spacing:1px; font-weight:bold;\">NEOTRAVEL</h1>\n      <p style=\"color:#8AA84B; margin:6px 0 0; font-size:14px; font-weight:bold; letter-spacing:0.5px;\">Transport de groupe avec chauffeur</p>\n    </td>\n  </tr>\n  <tr>\n    <td style=\"padding:40px 45px; color:#333333; font-size:15px; line-height:1.6;\">\n      <h2 style=\"margin-top:0; color:#0A2240; font-size:22px;\">Bonjour ${prenom} ${nom},</h2>\n      <p>Merci pour votre demande de devis&nbsp;! Il nous manque encore quelques informations pour vous préparer une estimation précise&nbsp;:</p>\n      <ul style=\"padding-left:5px; list-style:none; line-height:2.2; color:#0A2240; font-weight:bold; margin:25px 0;\">\n        ${listeManquants}\n      </ul>\n      <p>Cliquez sur le bouton ci-dessous pour compléter votre demande en moins d'une minute. Nous vous enverrons votre devis personnalisé juste après.</p>\n      <div style=\"text-align:center; margin:40px 0 10px;\">\n        <a href=\"${lienCompletion}\" target=\"_blank\" style=\"background:#8AA84B; color:white; padding:16px 35px; text-decoration:none; border-radius:8px; display:inline-block; font-weight:bold; font-size:16px; box-shadow:0 4px 12px rgba(138,168,75,0.25);\">✏️ Compléter ma demande</a>\n      </div>\n      <p style=\"margin-top:40px; color:#94A3B8; font-size:13px; text-align:center; line-height:1.4;\">Vous recevez cet email car vous avez initié une demande de devis sur NeoTravel. Un conseiller reste disponible du lundi au vendredi de 9h à 18h.</p>\n    </td>\n  </tr>\n</table>\n</td>\n</tr>\n</table>\n</body>\n</html>`;\n\nreturn [{ json: {\n  email, prenom, nom, telephone,\n  villeDepart, villeArrivee, dateDepart, nbPassagers,\n  champsManquants: manquants.join(', '),\n  emailHtml\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        288
+      ],
+      "id": "e874cd53-0ea8-484e-8fd6-0154333647ed",
+      "name": "Préparer Email Clarification"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "re_YCU5zRCA_NePiG4ZWszA7CdsgNMEf8Qe8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ from: 'onboarding@resend.dev', to: $('Préparer Email Clarification').item.json.email, subject: 'NeoTravel — Complétez votre demande de devis', html: $('Préparer Email Clarification').item.json.emailHtml }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2576,
+        288
+      ],
+      "id": "7bddae97-4972-4270-a062-9f15d0e44212",
+      "name": "Envoyer Email Clarification"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normaliser Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normaliser Payload": {
+      "main": [
+        [
+          {
+            "node": "Agent Neotravel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Neotravel": {
+      "main": [
+        [
+          {
+            "node": "Parse Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Devis pret ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Devis pret ?": {
+      "main": [
+        [
+          {
+            "node": "Calculer Distance + Devis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Manque Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculer Distance + Devis": {
+      "main": [
+        [
+          {
+            "node": "Create a record in Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record in Airtable": {
+      "main": [
+        [
+          {
+            "node": "Envoyer Email (Resend)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vercel AI Gateway Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent Neotravel",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agent Neotravel",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manque Info": {
+      "main": [
+        [
+          {
+            "node": "Préparer Email Clarification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer Email Clarification": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Envoyer Email Clarification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "13981a11-572f-4262-9e27-4f4563084867",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d13d424d131c8a9d62c88e5bd775eb86e15e561db2f90ecc619776d5d40e25c"
+  },
+  "nodeGroups": [],
+  "id": "WOuZ7XmuDifc3USN",
+  "tags": []
+}

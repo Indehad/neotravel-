@@ -1,245 +1,175 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from "react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+const EMMA_WEBHOOK = "/api/chat";
 
-type Role = 'user' | 'emma' | 'system';
+type Role = "user" | "assistant";
 
 interface Message {
-  id: string;
   role: Role;
   text: string;
-  ts: Date;
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function generateId() {
-  return Math.random().toString(36).slice(2, 10);
+function generateSessionId(): string {
+  return `session_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
-
-function generateSessionId() {
-  return 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-}
-
-const WELCOME: Message = {
-  id: 'welcome',
-  role: 'emma',
-  text: 'Bonjour ! Je suis Emma, votre conseillère transport NeoTravel. 🚌\n\nJe peux vous préparer un devis personnalisé en quelques minutes.\n\nPar où voulez-vous commencer ? Dites-moi votre trajet, vos dates, et le nombre de passagers.',
-  ts: new Date(),
-};
-
-// ─── Components ──────────────────────────────────────────────────────────────
-
-function TypingIndicator() {
-  return (
-    <div className="flex items-end gap-3 mb-4">
-      {/* Avatar Emma */}
-      <div className="w-8 h-8 rounded-full bg-olive flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-        E
-      </div>
-      <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-        <div className="flex gap-1 items-center h-5">
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Bubble({ msg }: { msg: Message }) {
-  const isUser = msg.role === 'user';
-  const isSystem = msg.role === 'system';
-
-  if (isSystem) {
-    return (
-      <div className="flex justify-center my-3">
-        <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
-          {msg.text}
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`flex items-end gap-3 mb-4 ${isUser ? 'flex-row-reverse' : ''}`}>
-      {/* Avatar */}
-      {isUser ? (
-        <div className="w-8 h-8 rounded-full bg-navy border border-white/30 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-          V
-        </div>
-      ) : (
-        <div className="w-8 h-8 rounded-full bg-olive flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-          E
-        </div>
-      )}
-
-      {/* Bubble */}
-      <div
-        className={`max-w-[70%] px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed whitespace-pre-wrap ${
-          isUser
-            ? 'bg-olive text-white rounded-br-sm'
-            : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm'
-        }`}
-      >
-        {msg.text}
-      </div>
-    </div>
-  );
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([WELCOME]);
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sessionId] = useState(generateSessionId);
-
+  const [sessionId] = useState<string>(generateSessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll to bottom on new messages
+  // Message d'accueil au chargement
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setMessages([
+      {
+        role: "assistant",
+        text: "Bonjour ! Je suis Emma, conseillère NeoTravel. Je vais vous préparer un devis en quelques questions.\n\nPour commencer : quelle est votre ville de départ ?",
+      },
+    ]);
+  }, []);
+
+  // Scroll automatique vers le bas
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  const sendMessage = useCallback(async () => {
-    const text = input.trim();
-    if (!text || loading) return;
+  async function sendMessage() {
+    const userMessage = input.trim();
+    if (!userMessage || loading) return;
 
-    const userMsg: Message = {
-      id: generateId(),
-      role: 'user',
-      text,
-      ts: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
+    setMessages((prev) => [...prev, { role: "user", text: userMessage }]);
+    setInput("");
     setLoading(true);
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, message: text }),
+      const res = await fetch(EMMA_WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, message: userMessage }),
       });
 
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
       const data = await res.json();
+      const reply =
+        data?.reply ?? data?.output ?? data?.message ??
+        "Je n'ai pas compris votre réponse. Pouvez-vous reformuler ?";
 
-      const emmaMsg: Message = {
-        id: generateId(),
-        role: 'emma',
-        text: res.ok
-          ? data.reply || "Je n'ai pas pu obtenir de réponse."
-          : data.error || 'Une erreur est survenue. Réessayez.',
-        ts: new Date(),
-      };
-
-      setMessages(prev => [...prev, emmaMsg]);
+      setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
     } catch {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
-          id: generateId(),
-          role: 'system',
-          text: 'Connexion interrompue. Vérifiez votre connexion.',
-          ts: new Date(),
+          role: "assistant",
+          text: "Une erreur est survenue. Veuillez réessayer ou nous contacter directement.",
         },
       ]);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
     }
-  }, [input, loading, sessionId]);
+  }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
-  };
-
-  // Auto-resize textarea
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-    e.target.style.height = 'auto';
-    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
-  };
+  }
 
   return (
-    <div className="flex flex-col h-screen bg-navy text-white">
-
-      {/* ── Header ── */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 shadow-sm flex-shrink-0">
-        <div className="w-10 h-10 rounded-full bg-olive flex items-center justify-center text-white font-bold text-sm">
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 shadow-sm">
+        <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
           E
         </div>
         <div>
-          <p className="font-semibold text-navy text-sm">Emma</p>
-          <p className="text-xs text-gray-500">Conseillère Transport · NeoTravel</p>
+          <p className="font-semibold text-gray-900 text-sm">Emma · NeoTravel</p>
+          <p className="text-xs text-blue-500">Conseillère devis · En ligne</p>
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="text-xs text-gray-500">En ligne</span>
-        </div>
+        <a
+          href="/"
+          className="ml-auto text-xs text-gray-400 hover:text-gray-600 underline"
+        >
+          ← Retour
+        </a>
       </header>
 
-      {/* ── Messages ── */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="max-w-2xl mx-auto">
-          {/* RGPD notice */}
-          <div className="text-center mb-6">
-            <p className="text-xs text-gray-400 bg-gray-100 rounded-lg px-3 py-2 inline-block max-w-sm">
-              Vos données sont collectées uniquement pour établir votre devis transport (RGPD Art. 6). Elles ne seront pas partagées avec des tiers.
-            </p>
-          </div>
-
-          {messages.map(msg => (
-            <Bubble key={msg.id} msg={msg} />
-          ))}
-
-          {loading && <TypingIndicator />}
-          <div ref={bottomRef} />
-        </div>
-      </div>
-
-      {/* ── Input ── */}
-      <div className="bg-white border-t border-gray-200 px-4 py-3 flex-shrink-0">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-end gap-3 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2 focus-within:border-olive focus-within:ring-1 focus-within:ring-olive transition-all">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Décrivez votre trajet, dates, nombre de passagers…"
-              rows={1}
-              disabled={loading}
-              className="flex-1 bg-transparent resize-none outline-none text-sm text-gray-800 placeholder-gray-400 py-1 max-h-[120px] disabled:opacity-50"
-              style={{ height: '36px' }}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={!input.trim() || loading}
-              className="w-8 h-8 rounded-full bg-olive flex items-center justify-center text-navy hover:bg-white transition-colors flex-shrink-0 mb-0.5"
-              aria-label="Envoyer"
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+          >
+            {msg.role === "assistant" && (
+              <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0 mt-1">
+                E
+              </div>
+            )}
+            <div
+              className={`max-w-xs sm:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+                msg.role === "user"
+                  ? "bg-blue-600 text-white rounded-tr-sm"
+                  : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm shadow-sm"
+              }`}
             >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-              </svg>
-            </button>
+              {msg.text}
+            </div>
           </div>
-          <p className="text-center text-xs text-gray-400 mt-2">
-            Entrée pour envoyer · Maj+Entrée pour nouvelle ligne
-          </p>
-        </div>
+        ))}
+
+        {/* Typing indicator */}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0 mt-1">
+              E
+            </div>
+            <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+              <div className="flex gap-1 items-center h-4">
+                <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:0ms]" />
+                <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:300ms]" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={bottomRef} />
       </div>
 
+      {/* Input */}
+      <div className="bg-white border-t border-gray-200 px-4 py-3">
+        <div className="flex items-center gap-2 max-w-2xl mx-auto">
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Votre réponse..."
+            disabled={loading}
+            className="flex-1 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors disabled:opacity-50"
+          />
+          <button
+            onClick={sendMessage}
+            disabled={loading || !input.trim()}
+            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white p-3 rounded-xl transition-colors"
+            aria-label="Envoyer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-90" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
+          </button>
+        </div>
+        <p className="text-center text-xs text-gray-400 mt-2">Entrée pour envoyer</p>
+      </div>
     </div>
   );
 }

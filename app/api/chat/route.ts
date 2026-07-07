@@ -1,23 +1,42 @@
 /**
  * POST /api/chat
  *
- * Proxy entre l'UI chat Next.js et le webhook Emma (n8n cloud).
- * Garde l'URL du webhook côté serveur — jamais exposée au navigateur.
- *
- * Body attendu : { sessionId: string, message: string }
- * Body transmis à n8n : { sessionId, chatInput }
- * Réponse de n8n : { output: string } ou texte brut
+ * Emma via Groq (llama-3.3-70b) — sans n8n, sans limite d'exécutions.
+ * Body : { message: string, history?: { role: string, text: string }[] }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
-const EMMA_WEBHOOK_URL =
-  process.env.EMMA_WEBHOOK_URL ||
-  'https://indehad.app.n8n.cloud/webhook/neotravel-chat';
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const MODEL = 'llama-3.3-70b-versatile';
+
+const EMMA_SYSTEM = `Tu es Emma, conseillère transport de NeoTravel. Tu aides les clients à obtenir un devis de transport de groupe en bus/car en France.
+
+Ton rôle : collecter les informations nécessaires pour établir un devis, une question à la fois, de façon naturelle et chaleureuse.
+
+Informations à collecter (dans cet ordre si non fournies) :
+1. Ville de départ
+2. Ville d'arrivée
+3. Date du trajet
+4. Nombre de passagers
+5. Aller simple ou aller-retour
+6. Adresse email du client
+
+Règles :
+- Pose UNE SEULE question à la fois
+- Sois chaleureuse, professionnelle et concise
+- Parle TOUJOURS en français
+- Si plus de 85 passagers : dis qu'un commercial les contactera sous 24h, demande l'email
+- Quand tu as TOUTES les infos : dis "Parfait ! Votre devis est en cours de préparation et vous sera envoyé à [email] dans les prochaines minutes."
+- Ne calcule JAMAIS de prix — tu n'as pas accès aux tarifs`;
 
 export async function POST(req: NextRequest) {
-  let body: { sessionId?: string; message?: string };
+  if (!GROQ_API_KEY) {
+    return NextResponse.json({ error: 'GROQ_API_KEY non configurée.' }, { status: 503 });
+  }
 
+  let body: { message?: string; history?: { role: string; text: string }[] };
   try {
     body = await req.json();
   } catch {
@@ -28,41 +47,39 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Message vide.' }, { status: 400 });
   }
 
+  // Construire l'historique au format OpenAI
+  const messages = [
+    { role: 'system', content: EMMA_SYSTEM },
+    ...(body.history || [])
+      .filter((m) => m.role !== 'system')
+      .map((m) => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.text,
+      })),
+    { role: 'user', content: body.message },
+  ];
+
   try {
-    const n8nRes = await fetch(EMMA_WEBHOOK_URL, {
+    const res = await fetch(GROQ_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sessionId: body.sessionId || 'default-session',
-        chatInput: body.message,
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({ model: MODEL, messages, temperature: 0.7, max_tokens: 512 }),
     });
 
-    if (!n8nRes.ok) {
-      const text = await n8nRes.text().catch(() => '');
-      console.error('Emma webhook error:', n8nRes.status, text);
-      return NextResponse.json(
-        { error: "Emma n'est pas disponible pour le moment." },
-        { status: 502 }
-      );
+    if (!res.ok) {
+      const err = await res.text().catch(() => '');
+      console.error('Groq error:', res.status, err);
+      return NextResponse.json({ error: "Emma n'est pas disponible." }, { status: 502 });
     }
 
-    const contentType = n8nRes.headers.get('content-type') || '';
-    let reply: string;
-
-    if (contentType.includes('application/json')) {
-      const data = await n8nRes.json();
-      reply = data.output || data.message || data.text || JSON.stringify(data);
-    } else {
-      reply = await n8nRes.text();
-    }
-
+    const data = await res.json();
+    const reply = data?.choices?.[0]?.message?.content || "Je n'ai pas pu générer une réponse.";
     return NextResponse.json({ reply }, { status: 200 });
   } catch (err) {
-    console.error('fetch Emma failed:', err);
-    return NextResponse.json(
-      { error: 'Impossible de joindre Emma.' },
-      { status: 502 }
-    );
+    console.error('Groq fetch failed:', err);
+    return NextResponse.json({ error: 'Impossible de joindre Emma.' }, { status: 502 });
   }
 }

@@ -113,10 +113,13 @@ export default function ChatPage() {
     setLoading(true);
 
     try {
+      // Envoie l'historique pour que Gemini ait le contexte
+      const history = messages.map((m) => ({ role: m.role, text: m.text }));
+
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, message: text }),
+        body: JSON.stringify({ sessionId, message: text, history }),
       });
 
       const data = await res.json();
@@ -138,7 +141,7 @@ export default function ChatPage() {
       setLoading(false);
       inputRef.current?.focus();
     }
-  }, [input, loading, sessionId]);
+  }, [input, loading, sessionId, messages]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {

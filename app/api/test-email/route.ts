@@ -1,16 +1,23 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-// This safely pulls your key from the .env.local file you just made
-const resend = new Resend(process.env.RESEND_API_KEY);
+// ⚠️ Resend initialisé DANS le handler, pas au niveau module
+// (sinon Next.js plante au build si RESEND_API_KEY est absent)
 
 export async function GET() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ success: false, error: 'RESEND_API_KEY non configurée.' }, { status: 503 });
+  }
+
+  const resend = new Resend(apiKey);
+
   try {
     const data = await resend.emails.send({
       from: 'onboarding@resend.dev',
-      to: 'gendellfriolanita@gmail.com', // Must be your registered Resend email
+      to: 'gendellfriolanita@gmail.com',
       subject: 'Hello World from VS Code!',
-      html: '<p>Congrats on sending your <strong>first email</strong> from your clean workspace!</p>'
+      html: '<p>Congrats on sending your <strong>first email</strong> from your clean workspace!</p>',
     });
 
     return NextResponse.json({ success: true, data });
